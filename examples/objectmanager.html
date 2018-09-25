@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- HTML Basic Head -->
+    <meta charset="UTF-8">
+    <title>Example - Object Manager Usage</title>
+
+    <!-- Quick Style -->
+    <style type="text/css">
+        body { background: #222; color: #FFF; padding: 0px; margin: 0px; font-family: calibri,helvetica,arial }
+        #content {padding: 5px 25px 50px 25px; background: rgba(0,0,0,0.15);}
+
+    </style>
+
+    <!-- Load JS Tools -->
+    <script type="text/javascript" src="../js-tools.js"></script>
+
+</head>
+<body>
+
+    <!-- HTML Content -->
+    <div id="content">
+        <h2>Output:</h2>
+        <div id="output">
+            <!-- Output goes here -->
+        </div>
+        <hr />
+        <i>Console for details (F12)</i>
+        <br />
+        <br />
+        <button id="save">Save settings again!</button>
+    </div>
+
+    <!-- Use JS Tools -->
+    <script type="text/javascript">
+
+        // DOM Elements
+        var dom_output = document.getElementById('output');
+        var dom_savebutton = document.getElementById('save');
+
+        // Some Data
+        var appversion = 1.3;
+        var curtime = Date.now();
+        var username = 'Ginny Potter';  // <-- Usally get from Server Login or so ...
+        var local_storage_key = 'my-app-settings-for-' + username.replace(" ","");
+        var default_object = {
+            'lastsave'      : curtime,      // Unixtime for Savetime (please not delete because its part of the check below)
+            'username'      : username,     // store for every User separat
+            'navigation'    : 'minify',     // minified or full Navigation View
+            'colortheme'    : 'dark',       // User Theme
+
+                                            // Add here some new Options or delete some
+            'version'       : appversion,
+            'my-old-feature' : false
+            //'my-new-feature': true
+
+
+
+
+        };
+
+        // DOM Events
+        dom_savebutton.addEventListener('click',function(){ // Button Klick
+
+            // Chage Time and Save Object
+            objectmanager.object.lastsave = Date.now();
+            objectmanager.save();
+
+            console.log("[JST] - Data updated!");
+
+            data_found_text();
+
+        });
+
+        // JS Tools -->
+
+        // Better managemend for JS Objects
+        var objectmanager = new jst.classes.ObjectManager(default_object , local_storage_key);
+        objectmanager.sync();
+
+        if(objectmanager.object.lastsave < curtime ){ // Check existing Timestamp ( Last Userupdate time )
+
+           data_found_text();
+
+           if( objectmanager.object.version < appversion){
+
+                old_version_text();
+
+           }
+
+        } else {
+
+           no_data_found_text();
+           dom_savebutton.style.display = 'none'; // <-- Hide Button on First Load - Not needed here
+
+        }
+
+
+        // -------------------------
+
+        // Some Functions for better reading main purpose
+        function data_found_text(){
+
+            var savedate = new Date(objectmanager.object.lastsave);
+            var output_text = "[JST] " + username + " have stored data! Last save was: " + jst.static.Formater.get_datetimestring(savedate, true);
+
+            dom_output.innerHTML = output_text;;
+
+            console.log(output_text,objectmanager.object);
+
+        }
+
+        function no_data_found_text(){
+
+            var output_text = "[JST] No data found for " + username + "! Data will no be updated! Reload Page to see stored data!";
+
+            dom_output.innerHTML = output_text;;
+
+            console.log(output_text);
+            objectmanager.save();
+
+        }
+
+        function old_version_text(){
+
+            var output_text = "[JST] User use old App Version Settings! " + username + "! Data will no be updated in 10 seconds!";
+
+            dom_output.innerHTML = output_text;
+            console.log(output_text);
+
+            // Overwrite everything with default
+            objectmanager.reset();
+
+            setTimeout(function(){
+                data_found_text();
+            },10000);
+
+        }
+
+
+
+    </script>
+</body>
+</html>
