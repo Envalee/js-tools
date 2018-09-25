@@ -1,34 +1,292 @@
 var jst = {
 
-  exceptions : { // Namespace : exceptions
+    type : { // JS Tool Types
 
-        JSException : function(message,code,callback){
+        main : { // Namespace : datatype / Datentypen fest definieren
 
-            message = typeof message === 'undefined' ? 'No errortext set' : message;
-            code = typeof code === 'undefined' ? 1 : code;
-            callback = typeof callback !== 'function' ? function(){} : callback;
+            Integer : function(number){
+                if(isNaN(parseInt(number)))
+                    throw new jst.type.exceptions.JSException('[Integer] Ungueltiger Parameter im Konstruktor!');
+                this.value = parseInt(number);
+            },
 
-            this.message = message;
-            this.code = code;
-            this.callback = callback;
+            Float : function(number){
+                if(typeof number === 'string') number = number.replace(',','.');
+                if(isNaN(parseFloat(number)))
+                    throw new jst.type.exceptions.JSException('[Float] Ungueltiger Parameter im Konstruktor! Zahl kann nicht konvertiert werden!');
+                this.value = parseFloat(number);
+            },
 
-            callback(this);
+            String : function(string){
+                this.value = string.toString();
+            },
+
+            Boolean : function(boolean){
+                if(boolean) this.value = true;
+                else this.value = false;
+            },
+
+            Object : function(object){
+
+                if(typeof object === 'object' && object.length === 'undefined'){
+                    this.value = object;
+                } else {
+                    throw new jst.type.exceptions.JSException('[Object] Ungueltiger Parameter beim Konstruktor! Es wird ein Objekt erwartet!');
+                }
+
+            },
+
+            Array : function(array){
+
+                if(typeof array === 'object' && array.length !== 'undefined'){
+                    this.value = array;
+                } else {
+                    throw new jst.type.exceptions.JSException('[Array] Ungueltiger Parameter beim Konstruktor! Es wird ein Array erwartet!');
+                }
+
+            }
+
+
+        },
+
+        math : { // Namespace : math / Mathematische Strukturen
+
+            Range : function(from,to){ // Von-Bis Angabe
+                this.from = new jst.type.main.Float(from).value;
+                this.to = new jst.type.main.Float(to).value;
+            },
+
+            Vector2D : function(x,y){ // 2D Koordinate
+                this.x = x;
+                this.y = y;
+            }
+
+        },
+
+        exceptions : { // Namespace : exceptions
+
+            JSException : function(message,code,data){
+
+                this.message = typeof message === 'undefined' ? 'No errortext set' : message;
+                this.code = typeof code === 'undefined' ? 0 : code;
+                this.data = typeof data !== 'object' ? {} : data;
+
+            }
+
+        },
+
+        names : { // REFERENZ
+
+            get integer()   {   return jst.type.main.Integer  },
+            get int()       {   return jst.type.main.Integer  },
+            get float()     {   return jst.type.main.Float    },
+            get boolean()   {   return jst.type.main.Boolean  },
+            get bool()      {   return jst.type.main.Boolean  },
+            get bit()       {   return jst.type.main.Boolean  },
+            get string()    {   return jst.type.main.String   },
+            get object()    {   return jst.type.main.Object   },
+            get array()     {   return jst.type.main.Array    },
+
+            get range()     {   return jst.type.math.Range        },
+            get vector2d()  {   return jst.type.math.Vector2D     }
 
         }
 
+    },
+
+    static : { // Static JS Tool Classes ( No instance needed )
+
+        /**
+         * Class
+         * Formatiert diverse diverse Formate
+         */
+        Formater : new function(){
+
+            var self = this;
+
+            self.to_number = function(number_string){
+
+                return Number(number_string.toString()
+                    .replace(',','.')
+                    .replace(/[^0-9][\\.]/g,'')
+                );
+
+            },
+
+
+            /**
+             * Fuellt eine Mitgegebene Nummer soweit mit Nullen davor auf, dass sie eine einheitliche Laenge bekommt.
+             * @param number int - Die Nummer selbst
+             * @param number_length int - Aus wievielen Zahlen die Nummer bestehen soll ( Laenge des Zahlenstrings )
+             * @returns string - Die Zahl mit Nullen aufgefuellt falls es notwendig war
+             */
+            self.zerofill = function(number,number_length){
+
+                // Zahl in String
+                var number_zerofilled = number.toString();
+
+                // Wenn String zu Kurz ist : String mit ein paar 0'en davor ergaenzen
+                for(var i = 0; i < number_length; i++) number_zerofilled = '0'+number_zerofilled;
+
+                // Ausgabe und soviele Nullen davor abschneiden bis die gewuenschte laenge erreicht ist
+                return number_zerofilled.slice(-number_length);
+
+            };
+
+            /**
+             * Gibt einen einheitlichen String mit Datum + Uhrzeit zurueck
+             * @param dateobject Date - Optional - Standard: Aktuelle Zeit - Datums Objekt von JavaScript
+             * @returns string - Datetime
+             */
+            self.get_datetimestring = function(dateobject,iso_format){
+
+                if (typeof dateobject === 'undefined') dateobject = new Date();
+
+                return this.get_datestring(dateobject,iso_format) + " " + this.get_timestring(dateobject);
+
+            };
+
+            /**
+             * Gibt einen einheitlichen String mit Datum zurueck
+             * @param dateobject Date - Optional - Standard: Aktuelle Zeit - Datums Objekt von JavaScript
+             * @param reverse_string boolean - Optional - Soll das Datum im US Format ausgegeben werden
+             * @returns string Date
+             */
+            self.get_datestring = function(dateobject , iso_format){
+
+                if (typeof dateobject === 'undefined') dateobject = new Date();
+                if (typeof iso_format === 'undefined') iso_format = false;
+
+                if(iso_format){
+
+                    return this.zerofill(dateobject.getFullYear(),4)
+                        + "-"
+                        + this.zerofill((dateobject.getMonth()+1),2)
+                        + "-"
+                        + this.zerofill(dateobject.getDate(), 2);
+
+                } else {
+
+                    return this.zerofill(dateobject.getDate(), 2)
+                        + "."
+                        + this.zerofill((dateobject.getMonth()+1),2)
+                        + "."
+                        + this.zerofill(dateobject.getFullYear(),4);
+
+                }
+
+
+
+            };
+
+
+            /**
+             * Gibt einen einheitlichen String mit Uhrzeit zurueck
+             * @param dateobject Date - Optional - Standard: Aktuelle Zeit - Datums Objekt von JavaScript
+             * @param display_seconds boolean - Optional - Sollen Sekunden angezeigt werden (Default: true)
+             * @returns string Time
+             */
+            self.get_timestring = function(dateobject , display_seconds){
+
+                if (typeof dateobject === 'undefined') dateobject = new Date();
+                if (typeof display_seconds === 'undefined') display_seconds = true;
+
+                if(display_seconds){
+
+                    return this.zerofill(dateobject.getHours(),2)
+                        + ":"
+                        + this.zerofill(dateobject.getMinutes(),2)
+                        + ":"
+                        + this.zerofill(dateobject.getSeconds(),2);
+
+                } else {
+
+                    return this.zerofill(dateobject.getHours(),2)
+                        + ":"
+                        + this.zerofill(dateobject.getMinutes(),2);
+
+                }
+
+            }
+
+        },
+
+        /**
+         * Class
+         * Datentyp Checker
+         */
+        TypeChecker : new function(){
+
+            var self = this;
+
+            /**
+             * Checkt ob ein Wert einen bestimmten Datentyp entspricht (Klasse).
+             * @param value mixed - Der Wert oder die Variable die geprueft werden soll
+             * @param typename string - Der Datetyp den der Wert entsprechen soll
+             * @oaram show_console_error boolean - Soll ein Fehler in der Konsole ausgegeben werden wenn der Typ nicht stimmt
+             */
+            self.check = function(value,typename,show_console_error){
+
+                typename = typename.toLowerCase();
+
+                if(typeof jst.type.names[typename] === 'undefined'){
+                    console.error("[TypeChecker] Undefinierte Typreferenz: " + typename);
+                    return false;
+                }
+
+                if(value instanceof jst.type.names[typename]) {
+
+                    return true;
+                } else {
+
+                    if(show_console_error) console.error("[TypeChecker] Erwartet Struktur: " + typename);
+                    return false;
+                }
+
+            }
+
+
+        },
+
+        /**
+         * Class
+         * Ein Taschenrechner fuer diverse einfache Rechenoperationen
+         */
+        Calculator : new function(){
+
+            var self = this;
+
+            /**
+             * Gibt den Prozentwert aus von Werten zwischen einem bestimmten Bereich
+             * @param float STRUCT.datatype.Float - Gleitkommazahl
+             * @param range STRUCT.math.Range - Von bis Range
+             */
+            self.prozent = function(float,range){
+
+                if(!jst.static.TypeChecker.check(float, 'float',true)) return false;
+                if(!jst.static.TypeChecker.check(range, 'range',true)) return false;
+
+                return (float.value-range.from)/(range.to-range.from)*100;
+
+            };
+
+
+        }
 
     },
 
-    tools : { // Namespace : tools
+    classes : { // JS Tool Classes
 
         /**
          * Class
          * Eine LocalStorage Manager um JavaScript LocalStorage besser managen zu koennen
          * @constructor
          */
-        LocalStorageManager : function(){
+        LocalStorageManager : function(storage_key){
 
             var self = this;
+
+            self.storage_key = storage_key;
 
             self.default_object = {}; // Standard Objekt
 
@@ -36,34 +294,33 @@ var jst = {
              * Holt ein Objekt aus dem LocalStorage
              * @param storage_key string - LocalStorage Key Name
              */
-            self.get_local_storage_objekt = function(storage_key){
+            self.get_objekt = function(){
 
-                if(localStorage.getItem(storage_key) !== null){
+                var objekt = null;
 
-                    var objekt = null;
+                if(localStorage.getItem(this.storage_key) !== null){
 
                     try {
 
-                        objekt = JSON.parse(localStorage.getItem(storage_key));
+                        objekt = JSON.parse(localStorage.getItem(this.storage_key));
 
                     } catch(e){}
 
-                    return objekt;
-
                 }
+
+                return objekt;
 
             };
 
             /**
              * Holt ein Wert anhand des Keys aus einem LocalStorage Objekt
-             * @param storage_key string - LocalStorage Key Name
              * @param object_key string - Key Name im LocalStorage Objekt
              */
-            self.get_local_storage_objekt_key = function(storage_key , object_key){
+            self.get_objekt_key = function( object_key ){
 
-                if(localStorage.getItem(storage_key) !== null){
+                if(localStorage.getItem(this.storage_key) !== null){
 
-                    var objekt = self.get_local_storage_objekt(storage_key);
+                    var objekt = self.get_objekt();
                     if(objekt !== null && typeof objekt[object_key] !== 'undefined') return objekt[object_key];
                     else return null;
 
@@ -73,13 +330,12 @@ var jst = {
 
             /**
              *  Setzte einen Objekt zum LocalStorage key
-             * @param key string - LocalStorage Key Name
              * @param object object - Ein Objekt das lokal gespeichert werden soll
              */
-            self.set_local_storage_objekt = function (key, object){
+            self.set_objekt = function (object){
 
                 if(typeof object !== 'object') console.error("Objekt erwartet!");
-                else localStorage.setItem(key, JSON.stringify(object) );
+                else localStorage.setItem(this.storage_key, JSON.stringify(object) );
 
             };
 
@@ -89,19 +345,19 @@ var jst = {
              * @param object_key string - LocalStorage -> Objekt -> Key Name
              * @pram value mixed - Der Wert der gespeichert werden soll
              */
-            self.set_local_storage_objekt_key = function(storage_key, object_key, value){
+            self.set_objekt_key = function( object_key, value){
 
-                if(localStorage.getItem(storage_key) !== null){
+                if(localStorage.getItem(this.storage_key) !== null){
 
-                    var objekt = JSON.parse(localStorage.getItem(storage_key));
+                    var objekt = JSON.parse(localStorage.getItem(this.storage_key));
                     objekt[object_key] = value;
-                    self.set_local_storage_objekt(storage_key,objekt);
+                    self.set_objekt(objekt);
 
                 } else {
 
                     var objekt = self.default_object;
                     objekt[object_key] = value;
-                    self.set_local_storage_objekt(storage_key,objekt);
+                    self.set_objekt(objekt);
 
                 }
 
@@ -111,9 +367,9 @@ var jst = {
              * Loescht einen Keys aus dem LocalStorage
              * @param storage_key string - LocalStorage Key Name
              */
-            self.delete_local_storage_key = function(storage_key){
+            self.delete = function(){
 
-                localStorage.removeItem(storage_key);
+                localStorage.removeItem(this.storage_key);
 
             }
 
@@ -121,10 +377,10 @@ var jst = {
              * Setzt den Inhalt eines Keys im LocalStorage auf NULL
              * @param storage_key string - LocalStorage Key Name
              */
-            self.clear_local_storage_key = function(storage_key){
+            self.clear = function(){
 
-                if(self.get_local_storage_objekt(storage_key) !== null)
-                    localStorage.setItem(storage_key, null);
+                if(self.get_objekt(this.storage_key) !== null)
+                    localStorage.setItem(this.storage_key, null);
 
             }
 
@@ -135,19 +391,20 @@ var jst = {
         /**
          * Class
          * Eine ObjektManager um JavaScript Objekte besser managen zu koennen
-         * @param object object - Ein Objekt das verwaltet werden soll oder null (Dann wird ein leeres Objekt erzeugt)
+         * @param object object - (Optional) Ein Objekt das verwaltet werden soll oder null (Dann wird ein leeres Objekt erzeugt)
+         * @param local_key string - (Optional) Local Storage Key
          * @constructor
          */
-        ObjectManager : function(object){
+        ObjectManager : function(object , local_key){
 
             var self = this;
 
             // Das zu verwaltende Objekt
             self.object = typeof object === 'undefined' ? {} : object;
+            local_key = typeof local_key === 'undefined' ? 'jst-local-key-placeholder' : local_key;
 
             // Lokales Speichermanagement
-            self.localStorageKey = null;
-            self.localStorageManager = new CLASSES.tools.LocalStorageManager();
+            self.localStorageManager = new jst.classes.LocalStorageManager(local_key);
 
             /**
              * Neuen Key zum Objekt hinzufuegen
@@ -174,7 +431,7 @@ var jst = {
             self.set_localstorage_key = function(key_name){
 
                 if(typeof key_name !== 'string') console.error('Der Key Name muss vom Typ string sein!');
-                else self.localStorageKey = key_name;
+                else self.localStorageManager.storage_key = key_name;
 
             };
 
@@ -185,8 +442,7 @@ var jst = {
              */
             self.save = function(){
 
-                if(typeof self.localStorageKey !== 'string') console.error('[class_ObjectManager].save() : LocalStorage Key nicht gesetzt!');
-                else self.localStorageManager.set_local_storage_objekt(self.localStorageKey , self.object);
+                self.localStorageManager.set_objekt( self.object );
 
             };
 
@@ -197,34 +453,44 @@ var jst = {
              */
             self.load = function(){
 
-                if(typeof self.localStorageKey !== 'string') console.error('[class_ObjectManager].load() : LocalStorage Key nicht vorhanden!');
-                else {
+                var localStorageObject = self.localStorageManager.get_objekt();
 
-                    var localStorageObject = self.localStorageManager.get_local_storage_objekt(self.localStorageKey);
+                if(localStorageObject !== null){ // Lokale Daten vorhanden
 
-                    if(localStorageObject !== null){ // Lokale Daten vorhanden
+                    if(self.count() > 0){ // Standardwerte vorhanden -> Merge Objects
 
-                        if(self.count() > 0){ // Standardwerte vorhanden -> Merge Objects
+                        for(var key in localStorageObject){
 
-                            for(var key in localStorageObject){
+                            if(typeof self.object[key] !== 'undefined'){ // Lade vorhandene Werte aus dem Storage
 
-                                if(typeof self.object[key] !== 'undefined'){ // Lade vorhandene Werte aus dem Storage
-
-                                    self.object[key] = localStorageObject[key];
-
-                                }
+                                self.object[key] = localStorageObject[key];
 
                             }
 
-                        } else {
-
-                            self.object = localStorageObject;
-
                         }
+
+                    } else {
+
+                        self.object = localStorageObject;
 
                     }
 
                 }
+
+            };
+
+            /**
+             * Setzt alle Einstellungen auf das Standard Objekt zurueck
+             * Sinnvoll bei App Updates oder neuer Konfigurationsstruktur
+             */
+            self.reset = function(){
+
+                self.localStorageManager.delete();
+                setTimeout(function(){
+
+                    self.sync();
+
+                },150);
 
             };
 
@@ -235,9 +501,8 @@ var jst = {
              */
             self.sync = function(){
 
-                if(typeof self.localStorageKey === 'undefined') return false;
-
                 self.load();
+                console.log("OB",self.object);
                 self.save();
 
                 return true;
@@ -362,7 +627,7 @@ var jst = {
 
             // Lokales Speichermanagement
             self.localStorageKey = null;
-            self.localStorageManager = new CLASSES.tools.LocalStorageManager();
+            self.localStorageManager = new jst.classes.LocalStorageManager();
 
             // Das zu verwaltende Objekt
             self.array = typeof array === 'undefined' ? [] : array;
@@ -425,7 +690,7 @@ var jst = {
              */
             self.save = function(){
 
-                if(typeof self.localStorageKey !== 'string') console.error('[class_ArrayManager].save() : LocalStorage Key nicht gesetzt!');
+                if(typeof self.localStorageKey !== 'string') console.error('[JST-ArrayManager].save() : LocalStorage Key nicht gesetzt!');
                 else self.localStorageManager.set_local_storage_objekt(self.localStorageKey , { 'array' : self.array } );
 
             };
@@ -437,7 +702,7 @@ var jst = {
              */
             self.load = function(){
 
-                if(typeof self.localStorageKey !== 'string') console.error('[class_ArrayManager].load() : LocalStorage Key nicht vorhanden!');
+                if(typeof self.localStorageKey !== 'string') console.error('[JST-ArrayManager].load() : LocalStorage Key nicht vorhanden!');
                 else {
 
                     var localStorageArray = self.localStorageManager.get_local_storage_objekt_key(self.localStorageKey, 'array');
@@ -493,10 +758,15 @@ var jst = {
 
 
 
-        },
+        }
+
+
 
     }
 
 
 
 };
+
+
+
