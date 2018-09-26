@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- HTML Basic Head -->
+    <meta charset="UTF-8">
+    <title>Example - Object Manager Usage</title>
+
+    <!-- Quick Style -->
+    <style type="text/css">
+        body {background: #222; color: #FFF; padding: 0px; margin: 0px; font-family: calibri,helvetica,arial }
+        #content {padding: 5px 25px 50px 25px; background: rgba(0,0,0,0.15);}
+    </style>
+
+    <!-- Load JS Tools -->
+    <script type="text/javascript" src="../js-tools.js"></script>
+
+</head>
+<body>
+
+    <!-- HTML Content -->
+    <div id="content">
+
+        <i>Console for details (F12)</i>
+
+    </div>
+
+    <!-- Use JS Tools -->
+    <script type="text/javascript">
+
+        // Some Data
+        var floats = [
+
+            // True Floats
+            new jst.type.main.Float(2),
+            new jst.type.main.Float(1.2),
+            new jst.type.main.Float(1.921),
+            new jst.type.main.Float("6.22"),
+            //new jst.type.main.Float("test"), // <-- Will throw JSException
+
+            // Cant be sure if its a real Float
+            1.2,
+            6,
+            1.1,
+            1.0283,
+            "3.2",
+            "1"
+
+        ];
+
+        // -------------------------------------------------------------------------------------------------------------
+
+        // JS Tools -->
+        // Typechecker
+
+        for(var i in floats){
+
+            // Check every value in floats
+            var result = jst.static.TypeChecker.check(floats[i] , 'float');
+
+            var value = floats[i].value ? floats[i].value : floats[i];
+
+            console.log("Index: " + i + " Value: " + value + " Is Float: " + result);
+
+        }
+
+        // -------------------------------------------------------------------------------------------------------------
+
+    </script>
+</body>
+</html>
