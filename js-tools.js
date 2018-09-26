@@ -11,9 +11,6 @@ var jst = {
         },
 
         Float : function(number){
-
-            var self = this;
-
             if(typeof number === 'string') number = number.replace(',','.');
             if(isNaN(parseFloat(number)))
                 throw new jst.type.JSException('[Float] Ungueltiger Parameter im Konstruktor! Zahl kann nicht konvertiert werden!');
@@ -25,8 +22,7 @@ var jst = {
         },
 
         Boolean : function(boolean){
-            if(boolean) this.value = true;
-            else this.value = false;
+            this.value = !!boolean;
         },
 
         Object : function(object){
@@ -114,7 +110,7 @@ var jst = {
          */
         self.to_number = function(number_string){
 
-            if(jst.static.TypeChecker.is_number(number_string))
+            if(jst.TypeChecker.is_number(number_string))
                 return Number(number_string.toString()
                     .replace(',','.')
                     .replace(/[^0-9][\\.]/g,'')
@@ -122,7 +118,7 @@ var jst = {
 
             else return null;
 
-        },
+        };
 
         /**
          * Fuellt eine Mitgegebene Nummer soweit mit Nullen davor auf, dass sie eine einheitliche Laenge bekommt.
@@ -146,6 +142,7 @@ var jst = {
         /**
          * Gibt einen einheitlichen String mit Datum + Uhrzeit zurueck
          * @param dateobject Date - Optional - Standard: Aktuelle Zeit - Datums Objekt von JavaScript
+         * @param iso_format boolean - Optional - Default: false - In US (ISO) Format ausgeben oder EU Format
          * @returns string - Datetime
          */
         self.get_datetimestring = function(dateobject,iso_format){
@@ -159,7 +156,7 @@ var jst = {
         /**
          * Gibt einen einheitlichen String mit Datum zurueck
          * @param dateobject Date - Optional - Standard: Aktuelle Zeit - Datums Objekt von JavaScript
-         * @param reverse_string boolean - Optional - Soll das Datum im US Format ausgegeben werden
+         * @param iso_format boolean - Optional - Soll das Datum im US Format ausgegeben werden
          * @returns string Date
          */
         self.get_datestring = function(dateobject , iso_format){
@@ -233,7 +230,7 @@ var jst = {
          * Checkt ob ein Wert einen bestimmten Datentyp entspricht (Klasse).
          * @param value mixed - Der Wert oder die Variable die geprueft werden soll
          * @param typename string - Der Datetyp den der Wert entsprechen soll
-         * @oaram show_console_error boolean - Soll ein Fehler in der Konsole ausgegeben werden wenn der Typ nicht stimmt
+         * @param show_console_error boolean - Soll ein Fehler in der Konsole ausgegeben werden wenn der Typ nicht stimmt
          */
         self.check = function(value,typename,show_console_error){
 
@@ -253,7 +250,7 @@ var jst = {
                 return false;
             }
 
-        }
+        };
 
         /**
          * Prueft ob ein Wert eine Nummer ist oder nicht
@@ -262,8 +259,7 @@ var jst = {
          */
         self.is_number = function(value){
 
-            if(!isNaN(value) && value !== null && value.toString().trim() !== '') return true;
-            else return false;
+            return (!isNaN(value) && value !== null && value.toString().trim() !== '');
 
         };
 
@@ -274,8 +270,7 @@ var jst = {
          */
         self.isset = function(value){
 
-            if(typeof value === 'undefined' || value === null || value.toString().trim() === '') return false;
-            else return true;
+            return !(typeof value === 'undefined' || value === null || value.toString().trim() === '');
 
         };
 
@@ -303,8 +298,7 @@ var jst = {
          */
         self.is_in_array = function(value,array){
 
-            if(array.indexOf(value) > -1) return true;
-            else return false;
+            return array.indexOf(value) > -1;
 
         }
 
@@ -367,7 +361,7 @@ var jst = {
 
         /**
          * Zaehle alle Eintraege in einem Objekt und gebe die Anzahl zurueck
-         * @param object|array
+         * @param object_or_array object|array
          * @returns {number}
          */
         self.count = function(object_or_array){
@@ -402,7 +396,7 @@ var jst = {
 
             var max = null;
             for(var i in object_or_array){
-                var val = object_or_array[i]
+                var val = object_or_array[i];
                 if(max === null) max = val;
                 if(jst.TypeChecker.is_number(val)){
                     val = Number(val);
@@ -446,7 +440,8 @@ var jst = {
 
         /**
          * Prueft ob das Node Element eine Kindelement des eigenen ist
-         * @param node_element
+         * @param child_node HTMLElement - Child Node to check
+         * @param parent_node HTMLElement - Parent Node to check
          * @return {boolean}
          */
         self.is_child = function(child_node , parent_node){
@@ -786,8 +781,7 @@ var jst = {
              */
             self.key_exists = function(key){
 
-                if(typeof self.object[key] !== 'undefined') return true;
-                else return false;
+                return typeof self.object[key] !== 'undefined';
 
             };
 
@@ -813,7 +807,7 @@ var jst = {
                 for(var i in self.object) key_count++;
                 return key_count;
 
-            }
+            };
 
             /**
              * Sammelt alle Keys und gibt die als Array zurueck
@@ -881,7 +875,7 @@ var jst = {
 
                 return same;
 
-            }
+            };
 
 
             /**
@@ -912,7 +906,7 @@ var jst = {
 
                 return _clone_object(this.object);
 
-            }
+            };
 
 
             self.construct(object , local_key);
@@ -972,8 +966,7 @@ var jst = {
              */
             self.value_exists = function(value){
 
-              if(self.array.indexOf(value) > -1) return true;
-              else return false;
+              return self.array.indexOf(value) > -1;
 
             };
 
