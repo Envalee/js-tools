@@ -30,28 +30,37 @@ access all the tools.
 #### Examples
 
 ```javascript
+// Exmaple for Calculator
 var value = 100;
-var range = new jst.type.math.Range(0,200);
-var perentage = new jst.static.Calculator.percent( value , range );
-// --> percentage : 50
+var range = new jst.type.Range(0,200);
+var perentage = new jst.Calculator.percent( value , range );
+console.log(percentage); // --> percentage : 50
 ```
+```javascript
+// Exmaple for Formatter
+var curdate = new Date(); // -> For example today is 26. Sep. 2018
+// param1: the dateobject , param2: iso_format
+console.log(jst.Formatter.get_datetimestring(curdate , true)); // --> 2018-09-26 13:30:14 (Year-Month-Day Hour:Minute:Second)
+console.log(jst.Formatter.get_datetimestring(curdate)); // --> 26.09.2018 13:30:14 (Day.Month.Year Hour:Minute:Second)
+```
+
 
 #### Main Parts
 
-* type - Datatypes that JS-Tools provides
+* type - Datatypes that JS-Tools provides (jst.type.TheTypeName)
   * main - Main Types like Float or Integers
   * math - Math Types like Range or Vectors
   * exceptions - Error handling Object Types
   * names - Reference only for internal usage
   
-* static - Ready to use instances which allow direct access to there functionality
+* static - Ready to use instances which allow direct access to there functionality (jst.TheStaticClassname)
   * Formatter - Formating strings and dates
   * TypeChecker - Check build in types or some other type stuff
   * Calculator - Easy math to calculate some common things
   * Dom - HTML Dom manipulation, checks and tools
   * Extra - Some functions which are not clear where to put them but are usefull
  
-* classes - Blueprints that can be used as a instance
+* classes - Blueprints that can be used as a instance (jst.classes.TheClassnameForYourInstance)
   * LocalStorageManager - Tool to manage local storage in the browser in a easier way
   * ObjectManager - Holds an Object and mangage it. It allows to store it localy too.
   * ArrayManager - Holds an Array and manage it. It allows to store it localy too.
