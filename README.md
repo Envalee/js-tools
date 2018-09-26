@@ -1,6 +1,6 @@
 # JS-Tools [ JavaScript Tools ]
 
-Some helpfull tools for Javascript.
+Some helpfull tools for Javascript. It should be as minimal as possible, but as much as possible to be useful. :)
 
 ## Installation
 
