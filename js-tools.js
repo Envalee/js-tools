@@ -11,12 +11,9 @@ var jst = {
             },
 
             Float : function(number){
-<<<<<<< HEAD
 
                 var self = this;
 
-=======
->>>>>>> refs/remotes/origin/master
                 if(typeof number === 'string') number = number.replace(',','.');
                 if(isNaN(parseFloat(number)))
                     throw new jst.type.exceptions.JSException('[Float] Ungueltiger Parameter im Konstruktor! Zahl kann nicht konvertiert werden!');
@@ -71,19 +68,12 @@ var jst = {
 
         exceptions : { // Namespace : exceptions
 
-<<<<<<< HEAD
             JSException : function(message,code,data,callback){
-=======
-            JSException : function(message,code,data){
->>>>>>> refs/remotes/origin/master
 
                 this.message = typeof message === 'undefined' ? 'No errortext set' : message;
                 this.code = typeof code === 'undefined' ? 0 : code;
                 this.data = typeof data !== 'object' ? {} : data;
-<<<<<<< HEAD
                 this.callback = typeof callback !== 'function' ? function(){} : callback;
-=======
->>>>>>> refs/remotes/origin/master
 
             }
 
@@ -807,17 +797,6 @@ var jst = {
 
         }
 
-
-
     }
 
-
-
-<<<<<<< HEAD
 };
-=======
-};
-
-
-
->>>>>>> refs/remotes/origin/master
