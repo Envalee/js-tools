@@ -334,6 +334,8 @@ var jst = {
              */
             self.set_objekt = function (object){
 
+                console.log("New Obj",object);
+
                 if(typeof object !== 'object') console.error("Objekt erwartet!");
                 else localStorage.setItem(this.storage_key, JSON.stringify(object) );
 
@@ -371,7 +373,7 @@ var jst = {
 
                 localStorage.removeItem(this.storage_key);
 
-            }
+            };
 
             /**
              * Setzt den Inhalt eines Keys im LocalStorage auf NULL
@@ -382,8 +384,7 @@ var jst = {
                 if(self.get_objekt(this.storage_key) !== null)
                     localStorage.setItem(this.storage_key, null);
 
-            }
-
+            };
 
 
         },
@@ -399,12 +400,26 @@ var jst = {
 
             var self = this;
 
-            // Das zu verwaltende Objekt
-            self.object = typeof object === 'undefined' ? {} : object;
-            local_key = typeof local_key === 'undefined' ? 'jst-local-key-placeholder' : local_key;
+            /**
+             * Constructor
+             * @param object Object - Object to manage
+             * @param local_key string - Storage Key if needed
+             */
+            self.construct = function(object, local_key){
 
-            // Lokales Speichermanagement
-            self.localStorageManager = new jst.classes.LocalStorageManager(local_key);
+                // Das zu verwaltende Objekt
+                self.object = typeof object === 'undefined' ? {} : object;
+                // Kopie des Objekts verwenden und nicht das Original
+                self.object = this.clone();
+
+                // Lokales Speichermanagement Key
+                local_key = typeof local_key === 'undefined' ? 'jst-local-key-placeholder' : local_key;
+                // Lokales Speichermanagement
+                self.localStorageManager = new jst.classes.LocalStorageManager(local_key);
+
+
+            };
+
 
             /**
              * Neuen Key zum Objekt hinzufuegen
@@ -480,21 +495,6 @@ var jst = {
             };
 
             /**
-             * Setzt alle Einstellungen auf das Standard Objekt zurueck
-             * Sinnvoll bei App Updates oder neuer Konfigurationsstruktur
-             */
-            self.reset = function(){
-
-                self.localStorageManager.delete();
-                setTimeout(function(){
-
-                    self.sync();
-
-                },150);
-
-            };
-
-            /**
              * Sychronisiert die Daten im Lokal Cache mit dem Objekt welches definiert ist.
              * Neue Keys werden hinzugefuegt und alte entfernt
              * @return boolean - false wenn Fehler
@@ -502,7 +502,6 @@ var jst = {
             self.sync = function(){
 
                 self.load();
-                console.log("OB",self.object);
                 self.save();
 
                 return true;
@@ -613,6 +612,41 @@ var jst = {
 
             }
 
+
+            /**
+             * Dupliziert das Objekt ohne eine Verbindung beizubehalten
+             * @returns object
+             */
+            self.clone = function(){
+
+                function _clone_object(object){
+
+                    var new_obj = {}; // New Object
+
+                    for(var key in object){ // Get all Key -> Value Pairs
+
+                        var value = object[key];
+
+                        if(typeof value === 'object'){ // If Object -> Clone Again
+                            value = _clone_object(value);
+                        }
+
+                        new_obj[key] = value; // Asign new Value ( Without reference )
+
+                    }
+
+                    return new_obj;
+
+                }
+
+                return _clone_object(this.object);
+
+            }
+
+
+            self.construct(object , local_key);
+
+
         },
 
         /**
@@ -621,13 +655,13 @@ var jst = {
          * @param array array - Ein Array das verwaltet werden soll oder null (Dann wird ein leeres Array erzeugt)
          * @constructor
          */
-        ArrayManager : function(array , value_types){
+        ArrayManager : function(array , local_key){
 
             var self = this;
 
-            // Lokales Speichermanagement
-            self.localStorageKey = null;
-            self.localStorageManager = new jst.classes.LocalStorageManager();
+            // Lokales Speichermanagement Key
+            local_key = typeof local_key === 'undefined' ? 'jst-local-key-placeholder' : local_key;
+            self.localStorageManager = new jst.classes.LocalStorageManager(local_key);
 
             // Das zu verwaltende Objekt
             self.array = typeof array === 'undefined' ? [] : array;
@@ -679,7 +713,7 @@ var jst = {
             self.set_localstorage_key = function(key_name){
 
                 if(typeof key_name !== 'string') console.error('Der Key Name muss vom Typ string sein!');
-                else self.localStorageKey = key_name;
+                else self.localStorageManager.storage_key = key_name;
 
             };
 
@@ -690,8 +724,7 @@ var jst = {
              */
             self.save = function(){
 
-                if(typeof self.localStorageKey !== 'string') console.error('[JST-ArrayManager].save() : LocalStorage Key nicht gesetzt!');
-                else self.localStorageManager.set_local_storage_objekt(self.localStorageKey , { 'array' : self.array } );
+                self.localStorageManager.set_objekt( { 'array' : self.array } );
 
             };
 
@@ -702,10 +735,10 @@ var jst = {
              */
             self.load = function(){
 
-                if(typeof self.localStorageKey !== 'string') console.error('[JST-ArrayManager].load() : LocalStorage Key nicht vorhanden!');
+                if(typeof self.localStorageManager.storage_key !== 'string') console.error('[JST-ArrayManager].load() : LocalStorage Key nicht vorhanden!');
                 else {
 
-                    var localStorageArray = self.localStorageManager.get_local_storage_objekt_key(self.localStorageKey, 'array');
+                    var localStorageArray = self.localStorageManager.get_objekt_key('array');
 
                     if (localStorageArray !== null) { // Lokale Daten vorhanden ?
 
