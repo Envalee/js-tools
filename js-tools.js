@@ -79,20 +79,25 @@ var jst = {
 
         },
 
-        names : { // REFERENZ
+        // Internal --->
+        names : { // REFERENZ - Only internal usage - do not think about this part , you wont need it
 
-            get integer()   {   return jst.type.main.Integer  },
-            get int()       {   return jst.type.main.Integer  },
-            get float()     {   return jst.type.main.Float    },
-            get boolean()   {   return jst.type.main.Boolean  },
-            get bool()      {   return jst.type.main.Boolean  },
-            get bit()       {   return jst.type.main.Boolean  },
-            get string()    {   return jst.type.main.String   },
-            get object()    {   return jst.type.main.Object   },
-            get array()     {   return jst.type.main.Array    },
+            // Add new Types here for the TypeChecker
 
-            get range()     {   return jst.type.math.Range        },
-            get vector2d()  {   return jst.type.math.Vector2D     }
+            get integer()       {   return jst.type.main.Integer  },
+            get int()           {   return jst.type.main.Integer  },
+            get float()         {   return jst.type.main.Float    },
+            get boolean()       {   return jst.type.main.Boolean  },
+            get bool()          {   return jst.type.main.Boolean  },
+            get bit()           {   return jst.type.main.Boolean  },
+            get string()        {   return jst.type.main.String   },
+            get object()        {   return jst.type.main.Object   },
+            get array()         {   return jst.type.main.Array    },
+
+            get range()         {   return jst.type.math.Range        },
+            get vector2d()      {   return jst.type.math.Vector2D     },
+
+            get jsexception()   {   return jst.type.exceptions.JSException }
 
         }
 
@@ -102,21 +107,23 @@ var jst = {
 
         /**
          * Class
-         * Formatiert diverse diverse Formate
+         * Formatiert diverse Formate
          */
-        Formater : new function(){
+        Formatter : new function(){
 
             var self = this;
 
             self.to_number = function(number_string){
 
-                return Number(number_string.toString()
-                    .replace(',','.')
-                    .replace(/[^0-9][\\.]/g,'')
-                );
+                if(jst.static.TypeChecker.is_number(number_string))
+                    return Number(number_string.toString()
+                        .replace(',','.')
+                        .replace(/[^0-9][\\.]/g,'')
+                    );
+
+                else return null;
 
             },
-
 
             /**
              * Fuellt eine Mitgegebene Nummer soweit mit Nullen davor auf, dass sie eine einheitliche Laenge bekommt.
@@ -249,6 +256,58 @@ var jst = {
 
             }
 
+            /**
+             * Prueft ob ein Wert eine Nummer ist oder nicht
+             * @param value mixed
+             * @returns boolean
+             */
+            self.is_number = function(value){
+
+                if(!isNaN(value) && value !== null && value.toString().trim() !== '') return true;
+                else return false;
+
+            };
+
+            /**
+             * Prueft ob eine Variable einen Wert enthaelt
+             * @param value
+             * @return {boolean}
+             */
+            self.isset = function(value){
+
+                if(typeof value === 'undefined' || value === null || value.toString().trim() === '') return false;
+                else return true;
+
+            };
+
+            /**
+             * Sucht eine genaue uebereinstimmung eines Keys mit dem Suchwort in einem Object
+             * @param key string|number
+             * @param object
+             * @returns {boolean}
+             */
+            self.is_key_in_object = function(key,object){
+
+                for(var word in object)
+                    if(word === key)
+                        return true;
+
+                return false;
+
+            };
+
+            /**
+             * Prueft ob ein Wert in einem Array vorhanden ist
+             * @param value
+             * @param array array
+             * @return {boolean}
+             */
+            self.is_in_array = function(value,array){
+
+                if(array.indexOf(value) > -1) return true;
+                else return false;
+
+            }
 
         },
 
@@ -265,12 +324,222 @@ var jst = {
              * @param float STRUCT.datatype.Float - Gleitkommazahl
              * @param range STRUCT.math.Range - Von bis Range
              */
-            self.prozent = function(float,range){
+            self.percent = function(float,range){
 
                 if(!jst.static.TypeChecker.check(float, 'float',true)) return false;
                 if(!jst.static.TypeChecker.check(range, 'range',true)) return false;
 
                 return (float.value-range.from)/(range.to-range.from)*100;
+
+            };
+
+            /**
+             * Gibt auf einer Skala von 0 - 100 die Einstuffung des mitgegebenes Wertes anhand
+             * der auch mitgegebenen MIN und MAX Werte aus
+             * @param min
+             * @param max
+             * @param value
+             */
+            self.ratio = function(min,max,value){
+
+                value = value - min;
+                max = max - min;
+                return value/max * 100;
+
+            };
+
+            /**
+             * Summiert alle Zahlen in einem Eindimensionalen Array zusammen
+             * @param array
+             */
+            self.sum = function(array){
+
+                var sum = 0;
+                for(var index in array){
+                    var val = array[index];
+                    if(jst.static.TypeChecker.is_number(val)){
+                        val = Number(val);
+                        sum += val;
+                    }
+                }
+                return sum;
+
+            };
+
+            /**
+             * Zaehle alle Eintraege in einem Objekt und gebe die Anzahl zurueck
+             * @param object|array
+             * @returns {number}
+             */
+            self.count = function(object_or_array){
+
+                var count = 0;
+                for(var i in object_or_array){
+                    count++;
+                }
+                return count;
+
+            };
+
+            /**
+             * Gibt den Durchschnitt vom Array aus
+             * @param array
+             * @rerutn {number}
+             */
+            self.avg = function(array){
+
+                return self.sum(array)/self.count(array);
+
+            };
+
+
+
+            /**
+             * Gibt den Maximalsten Wert aus eone Object oder Array
+             * @param object_or_array
+             * @return {number}
+             */
+            self.max = function(object_or_array){
+
+                var max = null;
+                for(var i in object_or_array){
+                    var val = object_or_array[i]
+                    if(max === null) max = val;
+                    if(jst.static.TypeChecker.is_number(val)){
+                        val = Number(val);
+                        if(val > max) max = val;
+                    }
+                }
+                return max;
+
+            };
+
+            /**
+             * Gibt den Minimalsten Wert aus eone Object oder Array
+             * @param object_or_array
+             * @return {number}
+             */
+            self.min = function(object_or_array){
+
+                var min = null;
+                for(var i in object_or_array){
+                    var val = object_or_array[i];
+                    if(min === null) min = val;
+                    if(jst.static.TypeChecker.is_number(val)) {
+                        val = Number(val);
+                        if (val < min) min = val;
+                    }
+                }
+                return min;
+
+            };
+
+
+        },
+
+        /**
+         * Class
+         * HTML Dom Manipulationen und Checks
+         */
+        Dom : new function(){
+
+            var self = this;
+
+            /**
+             * Prueft ob das Node Element eine Kindelement des eigenen ist
+             * @param node_element
+             * @return {boolean}
+             */
+            self.is_child = function(child_node , parent_node){
+
+                var is_child = false;
+                var max_loop = 5000; // Maximale Loop Begrenzung um Aufhaengen zu vermeiden
+                var i = 0;
+
+                while(true){
+
+                    if(typeof child_node.parentNode === 'undefined' || child_node.parentNode === null){
+                        break;
+                    }
+
+                    if(child_node === parent_node){
+                        is_child = true;
+                        break;
+                    }
+
+                    child_node = child_node.parentNode;
+
+                    if(i >= max_loop) break;
+                    i++;
+                }
+
+                return is_child;
+
+            };
+
+
+            /**
+             * Ersetzt eine Element mit einem Anderen
+             * @param old_node Node
+             * @param new_node Node
+             * @return new_node Node
+             */
+            self.replace_element = function(old_node, new_node){
+
+                old_node.parentNode.insertBefore(new_node,old_node);
+                old_node.parentNode.removeChild(old_node);
+                return new_node;
+
+            }
+
+        },
+
+        /**
+         * Class
+         * Extra Funktionen
+         *
+         * Not clear where to put these functions in
+         * so its a Placeholder for now
+         */
+        Extras : new function(){
+
+            var self = this;
+
+            /**
+             * Funktion die solange wartet bis eine Bedingung eintrifft
+             * @param check_func function - Die Funktion, welche die Bedingung checkt und TRUE oder FALSE zurueckgeben MUSS
+             * @param on_ready_func - Wenn die Bedingung erfuellt ist
+             * @param wait_intervall_in_ms - Die Sequenz wann immer gescheckt werden soll (alle X Millisekunden)
+             */
+            self.wait_until = function(check_func,on_ready_func,wait_intervall_in_ms){
+
+                wait_intervall_in_ms = typeof wait_intervall_in_ms === 'undefined' ? 5 : wait_intervall_in_ms;
+
+                var self = this;
+
+                setTimeout(function(){
+
+                    if(check_func()){
+                        on_ready_func();
+                    } else {
+                        self.wait_until(check_func,on_ready_func,wait_intervall_in_ms);
+                    }
+
+                },wait_intervall_in_ms);
+
+            };
+
+            /**
+             * Gibt eine Zufaellige ID zurueck
+             * @returns {string}
+             */
+            self.get_random_id = function(){
+
+                // Ganzzahl => (Von (0.x * (2^24) ) + 1) => zu Hexadeziaml
+                var id1 = (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
+                var id2 = (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
+                var id3 = (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
+                return id1 + '-' + id2 + '-' + id3;
 
             };
 
@@ -793,9 +1062,8 @@ var jst = {
 
             };
 
-
-
         }
+
 
     }
 
