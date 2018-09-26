@@ -3,7 +3,7 @@
 <head>
     <!-- HTML Basic Head -->
     <meta charset="UTF-8">
-    <title>Example - Object Manager Usage</title>
+    <title>Example - Type Checker Usage</title>
 
     <!-- Quick Style -->
     <style type="text/css">
@@ -31,10 +31,10 @@
         var floats = [
 
             // True Floats
-            new jst.type.main.Float(2),
-            new jst.type.main.Float(1.2),
-            new jst.type.main.Float(1.921),
-            new jst.type.main.Float("6.22"),
+            new jst.type.Float(2),
+            new jst.type.Float(1.2),
+            new jst.type.Float(1.921),
+            new jst.type.Float("6.22"),
             //new jst.type.main.Float("test"), // <-- Will throw JSException
 
             // Cant be sure if its a real Float
@@ -55,7 +55,7 @@
         for(var i in floats){
 
             // Check every value in floats
-            var result = jst.static.TypeChecker.check(floats[i] , 'float');
+            var result = jst.TypeChecker.check(floats[i] , 'float');
 
             var value = floats[i].value ? floats[i].value : floats[i];
 

@@ -105,7 +105,7 @@
         function data_found_text(){
 
             var savedate = new Date(objectmanager.object.lastsave);
-            var output_text = "[JST] " + username + " have stored data! Last save was: " + jst.static.Formatter.get_datetimestring(savedate, true);
+            var output_text = "[JST] " + username + " have stored data! Last save was: " + jst.Formatter.get_datetimestring(savedate, true);
 
             dom_output.innerHTML = output_text;
 

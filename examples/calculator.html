@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- HTML Basic Head -->
+    <meta charset="UTF-8">
+    <title>Example - Calculator Usage</title>
+
+    <!-- Quick Style -->
+    <style type="text/css">
+        body {background: #222; color: #FFF; padding: 0px; margin: 0px; font-family: calibri,helvetica,arial }
+        #content {padding: 5px 25px 50px 25px; background: rgba(0,0,0,0.15);}
+    </style>
+
+    <!-- Load JS Tools -->
+    <script type="text/javascript" src="../js-tools.js"></script>
+
+</head>
+<body>
+
+    <!-- HTML Content -->
+    <div id="content">
+
+        <i>Console for details (F12)</i>
+
+    </div>
+
+    <!-- Use JS Tools -->
+    <script type="text/javascript">
+
+        // Data
+        var my_numbers = [
+            50,99,132,23,182,85,94,37,55,23,45,98,99,122,130,12,8,2,5,69,2,52,21,51,2,85,121,9,14,122,131,5
+        ];
+
+        // -------------------------------------------------------------------------------------------------------------
+
+        // JS Tools -->
+        // Calculator
+
+        // Min ->
+        var min = jst.Calculator.min(my_numbers);
+        console.log("Min",min);
+
+        // Max ->
+        var max = jst.Calculator.max(my_numbers);
+        console.log("Max",max);
+
+        // Average ->
+        var avg = jst.Calculator.avg(my_numbers);
+        console.log("Average",avg);
+
+        // Sum ->
+        var sum = jst.Calculator.sum(my_numbers);
+        console.log("Sum",sum);
+
+        // Count ->
+        var count = jst.Calculator.count(my_numbers);
+        console.log("Count",count);
+
+        // Value in percent Variation 1 ->
+        var value_to_percent_1 = jst.Calculator.ratio(min,max,150);
+        console.log("Value in Percent",value_to_percent_1);
+
+        // Value in percent Variation 2 ->
+        var value_to_percent_2 = jst.Calculator.percent(
+            new jst.type.Float(150),
+            new jst.type.Range(min,max)
+        );
+
+        console.log("Value in Percent",value_to_percent_2);
+
+
+        // -------------------------------------------------------------------------------------------------------------
+
+    </script>
+</body>
+</html>
