@@ -1,23 +1,48 @@
 var jst = {
 
+    /**
+     * Types that JS Tools comes with
+     */
     type : { // JS Tool Types
 
+        //
         // datatype / Datentypen fest definieren
+        //
 
         Integer : function(number){
-            if(isNaN(parseInt(number)))
+
+            if(typeof number === 'string')
+                number = number
+                    .replace(',','.')
+                    .replace(/[^0-9.]|\s/g,"");
+
+            if(!jst.Checker.isset(number) || number === null || !number) number = 0;
+            else if(number === true) number = 1;
+            else if(isNaN(parseInt(number)))
                 throw new jst.type.JSException('[Integer] Ungueltiger Parameter im Konstruktor!');
+
             this.value = parseInt(number);
         },
 
         Float : function(number){
-            if(typeof number === 'string') number = number.replace(',','.');
-            if(isNaN(parseFloat(number)))
+
+            if(typeof number === 'string')
+                number = number
+                    .replace(',','.')
+                    .replace(/[^0-9.]|\s/g,"");
+
+            if(!jst.Checker.isset(number) || number === null || !number) number = 0.0;
+            else if(number === true) number = 1.0;
+            else if(isNaN(parseFloat(number)))
                 throw new jst.type.JSException('[Float] Ungueltiger Parameter im Konstruktor! Zahl kann nicht konvertiert werden!');
+
             this.value = parseFloat(number);
         },
 
         String : function(string){
+            if(string == null) string = 'null';
+            else if(!jst.Checker.isset(string)) string = "";
+
             this.value = string.toString();
         },
 
@@ -45,7 +70,9 @@ var jst = {
 
         },
 
+        //
         // math / Mathematische Strukturen
+        //
 
         Range : function(from,to){ // Von-Bis Angabe
             this.from = new jst.type.Float(from).value;
@@ -57,16 +84,50 @@ var jst = {
             this.y = y;
         },
 
-        // exceptions
+        //
+        // exceptions / Fehlerobjekte
+        //
 
         JSException : function(message,code,data,callback){
 
-                this.message = typeof message === 'undefined' ? 'No errortext set' : message;
-                this.code = typeof code === 'undefined' ? 0 : code;
-                this.data = typeof data !== 'object' ? {} : data;
-                this.callback = typeof callback !== 'function' ? function(){} : callback;
+            this.message = typeof message === 'undefined' ? 'No errortext set' : message;
+            this.code = typeof code === 'undefined' ? 0 : code;
+            this.data = typeof data !== 'object' ? {} : data;
+            this.callback = typeof callback !== 'function' ? function(){} : callback;
 
-            },
+        },
+
+        //
+        // Check Funktion und Namens Referenz
+        //
+
+        /**
+         * Check function for Types
+         *
+         * Checkt ob ein Wert einen bestimmten Datentyp entspricht (Klasse).
+         * @param value mixed - Der Wert oder die Variable die geprueft werden soll
+         * @param typename string - Der Datetyp den der Wert entsprechen soll
+         * @param show_console_error boolean - Soll ein Fehler in der Konsole ausgegeben werden wenn der Typ nicht stimmt
+         */
+        check : function(value,typename,show_console_error){
+
+            typename = typename.toLowerCase();
+
+            if(typeof jst.type.names[typename] === 'undefined'){
+                console.error("[TypeChecker] Undefinierte Typreferenz: " + typename);
+                return false;
+            }
+
+            if(value instanceof jst.type.names[typename]) {
+
+                return true;
+            } else {
+
+                if(show_console_error) console.error("[TypeChecker] Erwartet Struktur: " + typename);
+                return false;
+            }
+
+        },
 
         // Internal --->
         names : { // REFERENZ - Only internal usage - do not think about this part , you wont need it
@@ -110,7 +171,7 @@ var jst = {
          */
         self.to_number = function(number_string){
 
-            if(jst.TypeChecker.is_number(number_string))
+            if(jst.type.check.is_number(number_string))
                 return Number(number_string.toString()
                     .replace(',','.')
                     .replace(/[^0-9][\\.]/g,'')
@@ -142,29 +203,27 @@ var jst = {
         /**
          * Gibt einen einheitlichen String mit Datum + Uhrzeit zurueck
          * @param dateobject Date - Optional - Standard: Aktuelle Zeit - Datums Objekt von JavaScript
-         * @param iso_format boolean - Optional - Default: false - In US (ISO) Format ausgeben oder EU Format
+         * @param iso_date_format boolean - Optional - Default: false - In US (ISO) Format ausgeben oder EU Format
          * @returns string - Datetime
          */
-        self.get_datetimestring = function(dateobject,iso_format){
+        self.get_datetimestring = function(dateobject,iso_date_format){
 
-            if (typeof dateobject === 'undefined') dateobject = new Date();
-
-            return this.get_datestring(dateobject,iso_format) + " " + this.get_timestring(dateobject);
+            return this.get_datestring(dateobject,iso_date_format) + " " + this.get_timestring(dateobject);
 
         };
 
         /**
          * Gibt einen einheitlichen String mit Datum zurueck
          * @param dateobject Date - Optional - Standard: Aktuelle Zeit - Datums Objekt von JavaScript
-         * @param iso_format boolean - Optional - Soll das Datum im US Format ausgegeben werden
+         * @param iso_date_format boolean - Optional - Soll das Datum im US Format ausgegeben werden
          * @returns string Date
          */
-        self.get_datestring = function(dateobject , iso_format){
+        self.get_datestring = function(dateobject , iso_date_format){
 
             if (typeof dateobject === 'undefined') dateobject = new Date();
-            if (typeof iso_format === 'undefined') iso_format = false;
+            if (typeof iso_date_format === 'undefined') iso_date_format = false;
 
-            if(iso_format){
+            if(iso_date_format){
 
                 return this.zerofill(dateobject.getFullYear(),4)
                     + "-"
@@ -220,37 +279,11 @@ var jst = {
 
     /**
      * Class
-     * Datentyp Checker
+     * Daten Checker
      */
-    TypeChecker : new function(){
+    Checker : new function(){
 
         var self = this;
-
-        /**
-         * Checkt ob ein Wert einen bestimmten Datentyp entspricht (Klasse).
-         * @param value mixed - Der Wert oder die Variable die geprueft werden soll
-         * @param typename string - Der Datetyp den der Wert entsprechen soll
-         * @param show_console_error boolean - Soll ein Fehler in der Konsole ausgegeben werden wenn der Typ nicht stimmt
-         */
-        self.check = function(value,typename,show_console_error){
-
-            typename = typename.toLowerCase();
-
-            if(typeof jst.type.names[typename] === 'undefined'){
-                console.error("[TypeChecker] Undefinierte Typreferenz: " + typename);
-                return false;
-            }
-
-            if(value instanceof jst.type.names[typename]) {
-
-                return true;
-            } else {
-
-                if(show_console_error) console.error("[TypeChecker] Erwartet Struktur: " + typename);
-                return false;
-            }
-
-        };
 
         /**
          * Prueft ob ein Wert eine Nummer ist oder nicht
@@ -319,8 +352,8 @@ var jst = {
          */
         self.percent = function(float,range){
 
-            if(!jst.TypeChecker.check(float, 'float',true)) return false;
-            if(!jst.TypeChecker.check(range, 'range',true)) return false;
+            if(!jst.type.check(float, 'float',true)) return false;
+            if(!jst.type.check(range, 'range',true)) return false;
 
             return (float.value-range.from)/(range.to-range.from)*100;
 
@@ -350,7 +383,7 @@ var jst = {
             var sum = 0;
             for(var index in array){
                 var val = array[index];
-                if(jst.TypeChecker.is_number(val)){
+                if(jst.Checker.is_number(val)){
                     val = Number(val);
                     sum += val;
                 }
@@ -398,7 +431,7 @@ var jst = {
             for(var i in object_or_array){
                 var val = object_or_array[i];
                 if(max === null) max = val;
-                if(jst.TypeChecker.is_number(val)){
+                if(jst.Checker.is_number(val)){
                     val = Number(val);
                     if(val > max) max = val;
                 }
@@ -418,7 +451,7 @@ var jst = {
             for(var i in object_or_array){
                 var val = object_or_array[i];
                 if(min === null) min = val;
-                if(jst.TypeChecker.is_number(val)) {
+                if(jst.Checker.is_number(val)) {
                     val = Number(val);
                     if (val < min) min = val;
                 }
@@ -540,7 +573,9 @@ var jst = {
 
     },
 
-    // JS Tool Classes for indicidual Instances
+    /**
+     * JS Tool Classes for indicidual Instances
+     */
     classes : {
 
         /**

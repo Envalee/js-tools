@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- HTML Basic Head -->
+    <meta charset="UTF-8">
+    <title>Example - Types Usage</title>
+
+    <!-- Quick Style -->
+    <style type="text/css">
+        body {background: #222; color: #FFF; padding: 0px; margin: 0px; font-family: calibri,helvetica,arial }
+        #content {padding: 5px 25px 50px 25px; background: rgba(0,0,0,0.15);}
+    </style>
+
+    <!-- Load JS Tools -->
+    <script type="text/javascript" src="../js-tools.js"></script>
+
+</head>
+<body>
+
+    <!-- HTML Content -->
+    <div id="content">
+
+        <i>Console for details (F12)</i>
+
+    </div>
+
+    <!-- Use JS Tools -->
+    <script type="text/javascript">
+
+
+
+        // -------------------------------------------------------------------------------------------------------------
+
+        // JS Tools -->
+        // Types
+
+        //
+        // 1. Integer
+        //
+
+        // Create some Integer Types
+        var my_integer_01 = new jst.type.Integer(1);                // 1
+        var my_integer_02 = new jst.type.Integer("11.1%");          // 11
+        var my_integer_03 = new jst.type.Integer(111.11);           // 111
+        var my_integer_04 = new jst.type.Integer("A1a1A1bc1.1A1");  // 1111
+        var my_integer_05 = new jst.type.Integer(false);            // 0
+        var my_integer_06 = new jst.type.Integer(null);             // 0
+        var my_integer_07 = new jst.type.Integer(true);             // 1
+
+        console.log(my_integer_01.value);
+        console.log(my_integer_02.value);
+        console.log(my_integer_03.value);
+        console.log(my_integer_04.value);
+        console.log(my_integer_05.value);
+        console.log(my_integer_06.value);
+        console.log(my_integer_07.value);
+
+        //
+        // 2. Float
+        //
+
+        // Create some Integer Types
+        var my_float_01 = new jst.type.Float(2);                        // 2.0 => 2
+        var my_float_02 = new jst.type.Float("2.02 %");                 // 2.02
+        var my_float_03 = new jst.type.Float(2.0202);                   // 2.0202
+        var my_float_04 = new jst.type.Float("Num 2Test.22 Test22");    // 2.2222
+        var my_float_05 = new jst.type.Float(false);                     // 0
+
+        console.log(my_float_01.value);
+        console.log(my_float_02.value);
+        console.log(my_float_03.value);
+        console.log(my_float_04.value);
+        console.log(my_float_05.value);
+
+
+        //
+        // 3. String
+        //
+
+        // Create some Integer Types
+        var my_string_01 = new jst.type.String(3.0);                // "3.0" => "3"
+        var my_string_02 = new jst.type.String("3.03");             // "3.03"
+        var my_string_03 = new jst.type.String(null);               // "null"
+        var my_string_04 = new jst.type.String(false);              // "false"
+        var my_string_05 = new jst.type.String(true);               // "true"
+
+        console.log(my_string_01.value);
+        console.log(my_string_02.value);
+        console.log(my_string_03.value);
+        console.log(my_string_04.value);
+        console.log(my_string_05.value);
+
+        //
+        // 4. Boolean | Bool | Bit
+        //
+
+        // Create some Integer Types
+        var my_bool_01 = new jst.type.Boolean(4.0);             // true
+        var my_bool_02 = new jst.type.Boolean("My Text");       // true
+        var my_bool_03 = new jst.type.Boolean(false);           // false
+        var my_bool_04 = new jst.type.Boolean(null);            // false
+
+        console.log(my_bool_01.value);
+        console.log(my_bool_02.value);
+        console.log(my_bool_03.value);
+        console.log(my_bool_04.value);
+
+
+        // -------------------------------------------------------------------------------------------------------------
+
+    </script>
+</body>
+</html>
