@@ -14,12 +14,13 @@ Of course you can use the js-tools.min.js as well.
 
 ## Features
 
-* Datatype Objects (Float, Int, Vector, String, and more...)
-* Formatter for easy date strings (Date:Time) or easy number strings (Zerofill)
+* Datatype Objects (Float, Int, Vector, String, and more to be a little bit like TypeScript without big build tools)
+* Formatter for easy date strings (Date : Time) or easy number strings (Zerofill)
 * Objetmanager for more options to manage data
 * Arraymanager to manage arrays easier
 * LocalStorageManager to manage local data easier
 * Calculator for easy math and to have common functions in one place (average, sum, count, percentage, ...)
+* Utility functions to wait until something happens or to get a random hex ID and more...
 * more is comming...
 
 ## Usage
