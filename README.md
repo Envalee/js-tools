@@ -39,8 +39,22 @@ var perentage = new jst.static.Calculator.percent( value , range );
 #### Main Parts
 
 * type - Datatypes that JS-Tools provides
+  * main - Main Types like Float or Integers
+  * math - Math Types like Range or Vectors
+  * exceptions - Error handling Object Types
+  * names - Reference only for internal usage
+  
 * static - Ready to use instances which allow direct access to there functionality
+  * Formatter - Formating strings and dates
+  * TypeChecker - Check build in types or some other type stuff
+  * Calculator - Easy math to calculate some common things
+  * Dom - HTML Dom manipulation, checks and tools
+  * Extra - Some functions which are not clear where to put them but are usefull
+ 
 * classes - Blueprints that can be used as a instance
+  * LocalStorageManager - Tool to manage local storage in the browser in a easier way
+  * ObjectManager - Holds an Object and mangage it. It allows to store it localy too.
+  * ArrayManager - Holds an Array and manage it. It allows to store it localy too.
 
 ## Documentation
 Wiki link incoming...
