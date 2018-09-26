@@ -2,553 +2,551 @@ var jst = {
 
     type : { // JS Tool Types
 
-        main : { // Namespace : datatype / Datentypen fest definieren
+        // datatype / Datentypen fest definieren
 
-            Integer : function(number){
-                if(isNaN(parseInt(number)))
-                    throw new jst.type.exceptions.JSException('[Integer] Ungueltiger Parameter im Konstruktor!');
-                this.value = parseInt(number);
-            },
-
-            Float : function(number){
-
-                var self = this;
-
-                if(typeof number === 'string') number = number.replace(',','.');
-                if(isNaN(parseFloat(number)))
-                    throw new jst.type.exceptions.JSException('[Float] Ungueltiger Parameter im Konstruktor! Zahl kann nicht konvertiert werden!');
-                this.value = parseFloat(number);
-            },
-
-            String : function(string){
-                this.value = string.toString();
-            },
-
-            Boolean : function(boolean){
-                if(boolean) this.value = true;
-                else this.value = false;
-            },
-
-            Object : function(object){
-
-                if(typeof object === 'object' && object.length === 'undefined'){
-                    this.value = object;
-                } else {
-                    throw new jst.type.exceptions.JSException('[Object] Ungueltiger Parameter beim Konstruktor! Es wird ein Objekt erwartet!');
-                }
-
-            },
-
-            Array : function(array){
-
-                if(typeof array === 'object' && array.length !== 'undefined'){
-                    this.value = array;
-                } else {
-                    throw new jst.type.exceptions.JSException('[Array] Ungueltiger Parameter beim Konstruktor! Es wird ein Array erwartet!');
-                }
-
-            }
-
-
+        Integer : function(number){
+            if(isNaN(parseInt(number)))
+                throw new jst.type.JSException('[Integer] Ungueltiger Parameter im Konstruktor!');
+            this.value = parseInt(number);
         },
 
-        math : { // Namespace : math / Mathematische Strukturen
+        Float : function(number){
 
-            Range : function(from,to){ // Von-Bis Angabe
-                this.from = new jst.type.main.Float(from).value;
-                this.to = new jst.type.main.Float(to).value;
-            },
+            var self = this;
 
-            Vector2D : function(x,y){ // 2D Koordinate
-                this.x = x;
-                this.y = y;
+            if(typeof number === 'string') number = number.replace(',','.');
+            if(isNaN(parseFloat(number)))
+                throw new jst.type.JSException('[Float] Ungueltiger Parameter im Konstruktor! Zahl kann nicht konvertiert werden!');
+            this.value = parseFloat(number);
+        },
+
+        String : function(string){
+            this.value = string.toString();
+        },
+
+        Boolean : function(boolean){
+            if(boolean) this.value = true;
+            else this.value = false;
+        },
+
+        Object : function(object){
+
+            if(typeof object === 'object' && object.length === 'undefined'){
+                this.value = object;
+            } else {
+                throw new jst.type.JSException('[Object] Ungueltiger Parameter beim Konstruktor! Es wird ein Objekt erwartet!');
             }
 
         },
 
-        exceptions : { // Namespace : exceptions
+        Array : function(array){
 
-            JSException : function(message,code,data,callback){
+            if(typeof array === 'object' && array.length !== 'undefined'){
+                this.value = array;
+            } else {
+                throw new jst.type.JSException('[Array] Ungueltiger Parameter beim Konstruktor! Es wird ein Array erwartet!');
+            }
+
+        },
+
+        // math / Mathematische Strukturen
+
+        Range : function(from,to){ // Von-Bis Angabe
+            this.from = new jst.type.Float(from).value;
+            this.to = new jst.type.Float(to).value;
+        },
+
+        Vector2D : function(x,y){ // 2D Koordinate
+            this.x = x;
+            this.y = y;
+        },
+
+        // exceptions
+
+        JSException : function(message,code,data,callback){
 
                 this.message = typeof message === 'undefined' ? 'No errortext set' : message;
                 this.code = typeof code === 'undefined' ? 0 : code;
                 this.data = typeof data !== 'object' ? {} : data;
                 this.callback = typeof callback !== 'function' ? function(){} : callback;
 
-            }
-
-        },
+            },
 
         // Internal --->
         names : { // REFERENZ - Only internal usage - do not think about this part , you wont need it
 
             // Add new Types here for the TypeChecker
 
-            get integer()       {   return jst.type.main.Integer  },
-            get int()           {   return jst.type.main.Integer  },
-            get float()         {   return jst.type.main.Float    },
-            get boolean()       {   return jst.type.main.Boolean  },
-            get bool()          {   return jst.type.main.Boolean  },
-            get bit()           {   return jst.type.main.Boolean  },
-            get string()        {   return jst.type.main.String   },
-            get object()        {   return jst.type.main.Object   },
-            get array()         {   return jst.type.main.Array    },
+            get integer()       {   return jst.type.Integer  },
+            get int()           {   return jst.type.Integer  },
+            get float()         {   return jst.type.Float    },
+            get boolean()       {   return jst.type.Boolean  },
+            get bool()          {   return jst.type.Boolean  },
+            get bit()           {   return jst.type.Boolean  },
+            get string()        {   return jst.type.String   },
+            get object()        {   return jst.type.Object   },
+            get array()         {   return jst.type.Array    },
 
-            get range()         {   return jst.type.math.Range        },
-            get vector2d()      {   return jst.type.math.Vector2D     },
+            get range()         {   return jst.type.Range    },
+            get vector2d()      {   return jst.type.Vector2D },
 
-            get jsexception()   {   return jst.type.exceptions.JSException }
+            get jsexception()   {   return jst.type.JSException }
 
         }
 
     },
 
-    static : { // Static JS Tool Classes ( No instance needed )
+    // Static JS Tool Classes ( No instance needed )
+
+    /**
+     * Class
+     * Formatiert diverse Formate
+     */
+    Formatter : new function(){
+
+        var self = this;
 
         /**
-         * Class
-         * Formatiert diverse Formate
+         * Konvertiert einen String oder eine Zahl selbst
+         * in eine Nummer. Bei Fehler kommt null zurueck
+         * @param number_string string - Zahl die in eine Nummer konvertiert werden soll
+         * @returns number|null - on error or not possible null
          */
-        Formatter : new function(){
+        self.to_number = function(number_string){
 
-            var self = this;
+            if(jst.static.TypeChecker.is_number(number_string))
+                return Number(number_string.toString()
+                    .replace(',','.')
+                    .replace(/[^0-9][\\.]/g,'')
+                );
 
-            self.to_number = function(number_string){
-
-                if(jst.static.TypeChecker.is_number(number_string))
-                    return Number(number_string.toString()
-                        .replace(',','.')
-                        .replace(/[^0-9][\\.]/g,'')
-                    );
-
-                else return null;
-
-            },
-
-            /**
-             * Fuellt eine Mitgegebene Nummer soweit mit Nullen davor auf, dass sie eine einheitliche Laenge bekommt.
-             * @param number int - Die Nummer selbst
-             * @param number_length int - Aus wievielen Zahlen die Nummer bestehen soll ( Laenge des Zahlenstrings )
-             * @returns string - Die Zahl mit Nullen aufgefuellt falls es notwendig war
-             */
-            self.zerofill = function(number,number_length){
-
-                // Zahl in String
-                var number_zerofilled = number.toString();
-
-                // Wenn String zu Kurz ist : String mit ein paar 0'en davor ergaenzen
-                for(var i = 0; i < number_length; i++) number_zerofilled = '0'+number_zerofilled;
-
-                // Ausgabe und soviele Nullen davor abschneiden bis die gewuenschte laenge erreicht ist
-                return number_zerofilled.slice(-number_length);
-
-            };
-
-            /**
-             * Gibt einen einheitlichen String mit Datum + Uhrzeit zurueck
-             * @param dateobject Date - Optional - Standard: Aktuelle Zeit - Datums Objekt von JavaScript
-             * @returns string - Datetime
-             */
-            self.get_datetimestring = function(dateobject,iso_format){
-
-                if (typeof dateobject === 'undefined') dateobject = new Date();
-
-                return this.get_datestring(dateobject,iso_format) + " " + this.get_timestring(dateobject);
-
-            };
-
-            /**
-             * Gibt einen einheitlichen String mit Datum zurueck
-             * @param dateobject Date - Optional - Standard: Aktuelle Zeit - Datums Objekt von JavaScript
-             * @param reverse_string boolean - Optional - Soll das Datum im US Format ausgegeben werden
-             * @returns string Date
-             */
-            self.get_datestring = function(dateobject , iso_format){
-
-                if (typeof dateobject === 'undefined') dateobject = new Date();
-                if (typeof iso_format === 'undefined') iso_format = false;
-
-                if(iso_format){
-
-                    return this.zerofill(dateobject.getFullYear(),4)
-                        + "-"
-                        + this.zerofill((dateobject.getMonth()+1),2)
-                        + "-"
-                        + this.zerofill(dateobject.getDate(), 2);
-
-                } else {
-
-                    return this.zerofill(dateobject.getDate(), 2)
-                        + "."
-                        + this.zerofill((dateobject.getMonth()+1),2)
-                        + "."
-                        + this.zerofill(dateobject.getFullYear(),4);
-
-                }
-
-
-
-            };
-
-
-            /**
-             * Gibt einen einheitlichen String mit Uhrzeit zurueck
-             * @param dateobject Date - Optional - Standard: Aktuelle Zeit - Datums Objekt von JavaScript
-             * @param display_seconds boolean - Optional - Sollen Sekunden angezeigt werden (Default: true)
-             * @returns string Time
-             */
-            self.get_timestring = function(dateobject , display_seconds){
-
-                if (typeof dateobject === 'undefined') dateobject = new Date();
-                if (typeof display_seconds === 'undefined') display_seconds = true;
-
-                if(display_seconds){
-
-                    return this.zerofill(dateobject.getHours(),2)
-                        + ":"
-                        + this.zerofill(dateobject.getMinutes(),2)
-                        + ":"
-                        + this.zerofill(dateobject.getSeconds(),2);
-
-                } else {
-
-                    return this.zerofill(dateobject.getHours(),2)
-                        + ":"
-                        + this.zerofill(dateobject.getMinutes(),2);
-
-                }
-
-            }
+            else return null;
 
         },
 
         /**
-         * Class
-         * Datentyp Checker
+         * Fuellt eine Mitgegebene Nummer soweit mit Nullen davor auf, dass sie eine einheitliche Laenge bekommt.
+         * @param number int - Die Nummer selbst
+         * @param number_length int - Aus wievielen Zahlen die Nummer bestehen soll ( Laenge des Zahlenstrings )
+         * @returns string - Die Zahl mit Nullen aufgefuellt falls es notwendig war
          */
-        TypeChecker : new function(){
+        self.zerofill = function(number,number_length){
 
-            var self = this;
+            // Zahl in String
+            var number_zerofilled = number.toString();
 
-            /**
-             * Checkt ob ein Wert einen bestimmten Datentyp entspricht (Klasse).
-             * @param value mixed - Der Wert oder die Variable die geprueft werden soll
-             * @param typename string - Der Datetyp den der Wert entsprechen soll
-             * @oaram show_console_error boolean - Soll ein Fehler in der Konsole ausgegeben werden wenn der Typ nicht stimmt
-             */
-            self.check = function(value,typename,show_console_error){
+            // Wenn String zu Kurz ist : String mit ein paar 0'en davor ergaenzen
+            for(var i = 0; i < number_length; i++) number_zerofilled = '0'+number_zerofilled;
 
-                typename = typename.toLowerCase();
+            // Ausgabe und soviele Nullen davor abschneiden bis die gewuenschte laenge erreicht ist
+            return number_zerofilled.slice(-number_length);
 
-                if(typeof jst.type.names[typename] === 'undefined'){
-                    console.error("[TypeChecker] Undefinierte Typreferenz: " + typename);
-                    return false;
-                }
+        };
 
-                if(value instanceof jst.type.names[typename]) {
+        /**
+         * Gibt einen einheitlichen String mit Datum + Uhrzeit zurueck
+         * @param dateobject Date - Optional - Standard: Aktuelle Zeit - Datums Objekt von JavaScript
+         * @returns string - Datetime
+         */
+        self.get_datetimestring = function(dateobject,iso_format){
 
-                    return true;
-                } else {
+            if (typeof dateobject === 'undefined') dateobject = new Date();
 
-                    if(show_console_error) console.error("[TypeChecker] Erwartet Struktur: " + typename);
-                    return false;
-                }
+            return this.get_datestring(dateobject,iso_format) + " " + this.get_timestring(dateobject);
+
+        };
+
+        /**
+         * Gibt einen einheitlichen String mit Datum zurueck
+         * @param dateobject Date - Optional - Standard: Aktuelle Zeit - Datums Objekt von JavaScript
+         * @param reverse_string boolean - Optional - Soll das Datum im US Format ausgegeben werden
+         * @returns string Date
+         */
+        self.get_datestring = function(dateobject , iso_format){
+
+            if (typeof dateobject === 'undefined') dateobject = new Date();
+            if (typeof iso_format === 'undefined') iso_format = false;
+
+            if(iso_format){
+
+                return this.zerofill(dateobject.getFullYear(),4)
+                    + "-"
+                    + this.zerofill((dateobject.getMonth()+1),2)
+                    + "-"
+                    + this.zerofill(dateobject.getDate(), 2);
+
+            } else {
+
+                return this.zerofill(dateobject.getDate(), 2)
+                    + "."
+                    + this.zerofill((dateobject.getMonth()+1),2)
+                    + "."
+                    + this.zerofill(dateobject.getFullYear(),4);
 
             }
 
-            /**
-             * Prueft ob ein Wert eine Nummer ist oder nicht
-             * @param value mixed
-             * @returns boolean
-             */
-            self.is_number = function(value){
 
-                if(!isNaN(value) && value !== null && value.toString().trim() !== '') return true;
-                else return false;
 
-            };
+        };
 
-            /**
-             * Prueft ob eine Variable einen Wert enthaelt
-             * @param value
-             * @return {boolean}
-             */
-            self.isset = function(value){
 
-                if(typeof value === 'undefined' || value === null || value.toString().trim() === '') return false;
-                else return true;
+        /**
+         * Gibt einen einheitlichen String mit Uhrzeit zurueck
+         * @param dateobject Date - Optional - Standard: Aktuelle Zeit - Datums Objekt von JavaScript
+         * @param display_seconds boolean - Optional - Sollen Sekunden angezeigt werden (Default: true)
+         * @returns string Time
+         */
+        self.get_timestring = function(dateobject , display_seconds){
 
-            };
+            if (typeof dateobject === 'undefined') dateobject = new Date();
+            if (typeof display_seconds === 'undefined') display_seconds = true;
 
-            /**
-             * Sucht eine genaue uebereinstimmung eines Keys mit dem Suchwort in einem Object
-             * @param key string|number
-             * @param object
-             * @returns {boolean}
-             */
-            self.is_key_in_object = function(key,object){
+            if(display_seconds){
 
-                for(var word in object)
-                    if(word === key)
-                        return true;
+                return this.zerofill(dateobject.getHours(),2)
+                    + ":"
+                    + this.zerofill(dateobject.getMinutes(),2)
+                    + ":"
+                    + this.zerofill(dateobject.getSeconds(),2);
 
+            } else {
+
+                return this.zerofill(dateobject.getHours(),2)
+                    + ":"
+                    + this.zerofill(dateobject.getMinutes(),2);
+
+            }
+
+        }
+
+    },
+
+    /**
+     * Class
+     * Datentyp Checker
+     */
+    TypeChecker : new function(){
+
+        var self = this;
+
+        /**
+         * Checkt ob ein Wert einen bestimmten Datentyp entspricht (Klasse).
+         * @param value mixed - Der Wert oder die Variable die geprueft werden soll
+         * @param typename string - Der Datetyp den der Wert entsprechen soll
+         * @oaram show_console_error boolean - Soll ein Fehler in der Konsole ausgegeben werden wenn der Typ nicht stimmt
+         */
+        self.check = function(value,typename,show_console_error){
+
+            typename = typename.toLowerCase();
+
+            if(typeof jst.type.names[typename] === 'undefined'){
+                console.error("[TypeChecker] Undefinierte Typreferenz: " + typename);
                 return false;
-
-            };
-
-            /**
-             * Prueft ob ein Wert in einem Array vorhanden ist
-             * @param value
-             * @param array array
-             * @return {boolean}
-             */
-            self.is_in_array = function(value,array){
-
-                if(array.indexOf(value) > -1) return true;
-                else return false;
-
             }
 
-        },
+            if(value instanceof jst.type.names[typename]) {
 
-        /**
-         * Class
-         * Ein Taschenrechner fuer diverse einfache Rechenoperationen
-         */
-        Calculator : new function(){
+                return true;
+            } else {
 
-            var self = this;
-
-            /**
-             * Gibt den Prozentwert aus von Werten zwischen einem bestimmten Bereich
-             * @param float STRUCT.datatype.Float - Gleitkommazahl
-             * @param range STRUCT.math.Range - Von bis Range
-             */
-            self.percent = function(float,range){
-
-                if(!jst.static.TypeChecker.check(float, 'float',true)) return false;
-                if(!jst.static.TypeChecker.check(range, 'range',true)) return false;
-
-                return (float.value-range.from)/(range.to-range.from)*100;
-
-            };
-
-            /**
-             * Gibt auf einer Skala von 0 - 100 die Einstuffung des mitgegebenes Wertes anhand
-             * der auch mitgegebenen MIN und MAX Werte aus
-             * @param min
-             * @param max
-             * @param value
-             */
-            self.ratio = function(min,max,value){
-
-                value = value - min;
-                max = max - min;
-                return value/max * 100;
-
-            };
-
-            /**
-             * Summiert alle Zahlen in einem Eindimensionalen Array zusammen
-             * @param array
-             */
-            self.sum = function(array){
-
-                var sum = 0;
-                for(var index in array){
-                    var val = array[index];
-                    if(jst.static.TypeChecker.is_number(val)){
-                        val = Number(val);
-                        sum += val;
-                    }
-                }
-                return sum;
-
-            };
-
-            /**
-             * Zaehle alle Eintraege in einem Objekt und gebe die Anzahl zurueck
-             * @param object|array
-             * @returns {number}
-             */
-            self.count = function(object_or_array){
-
-                var count = 0;
-                for(var i in object_or_array){
-                    count++;
-                }
-                return count;
-
-            };
-
-            /**
-             * Gibt den Durchschnitt vom Array aus
-             * @param array
-             * @rerutn {number}
-             */
-            self.avg = function(array){
-
-                return self.sum(array)/self.count(array);
-
-            };
-
-
-
-            /**
-             * Gibt den Maximalsten Wert aus eone Object oder Array
-             * @param object_or_array
-             * @return {number}
-             */
-            self.max = function(object_or_array){
-
-                var max = null;
-                for(var i in object_or_array){
-                    var val = object_or_array[i]
-                    if(max === null) max = val;
-                    if(jst.static.TypeChecker.is_number(val)){
-                        val = Number(val);
-                        if(val > max) max = val;
-                    }
-                }
-                return max;
-
-            };
-
-            /**
-             * Gibt den Minimalsten Wert aus eone Object oder Array
-             * @param object_or_array
-             * @return {number}
-             */
-            self.min = function(object_or_array){
-
-                var min = null;
-                for(var i in object_or_array){
-                    var val = object_or_array[i];
-                    if(min === null) min = val;
-                    if(jst.static.TypeChecker.is_number(val)) {
-                        val = Number(val);
-                        if (val < min) min = val;
-                    }
-                }
-                return min;
-
-            };
-
-
-        },
-
-        /**
-         * Class
-         * HTML Dom Manipulationen und Checks
-         */
-        Dom : new function(){
-
-            var self = this;
-
-            /**
-             * Prueft ob das Node Element eine Kindelement des eigenen ist
-             * @param node_element
-             * @return {boolean}
-             */
-            self.is_child = function(child_node , parent_node){
-
-                var is_child = false;
-                var max_loop = 5000; // Maximale Loop Begrenzung um Aufhaengen zu vermeiden
-                var i = 0;
-
-                while(true){
-
-                    if(typeof child_node.parentNode === 'undefined' || child_node.parentNode === null){
-                        break;
-                    }
-
-                    if(child_node === parent_node){
-                        is_child = true;
-                        break;
-                    }
-
-                    child_node = child_node.parentNode;
-
-                    if(i >= max_loop) break;
-                    i++;
-                }
-
-                return is_child;
-
-            };
-
-
-            /**
-             * Ersetzt eine Element mit einem Anderen
-             * @param old_node Node
-             * @param new_node Node
-             * @return new_node Node
-             */
-            self.replace_element = function(old_node, new_node){
-
-                old_node.parentNode.insertBefore(new_node,old_node);
-                old_node.parentNode.removeChild(old_node);
-                return new_node;
-
+                if(show_console_error) console.error("[TypeChecker] Erwartet Struktur: " + typename);
+                return false;
             }
 
-        },
+        }
 
         /**
-         * Class
-         * Extra Funktionen
-         *
-         * Not clear where to put these functions in
-         * so its a Placeholder for now
+         * Prueft ob ein Wert eine Nummer ist oder nicht
+         * @param value mixed
+         * @returns boolean
          */
-        Extras : new function(){
+        self.is_number = function(value){
 
-            var self = this;
+            if(!isNaN(value) && value !== null && value.toString().trim() !== '') return true;
+            else return false;
 
-            /**
-             * Funktion die solange wartet bis eine Bedingung eintrifft
-             * @param check_func function - Die Funktion, welche die Bedingung checkt und TRUE oder FALSE zurueckgeben MUSS
-             * @param on_ready_func - Wenn die Bedingung erfuellt ist
-             * @param wait_intervall_in_ms - Die Sequenz wann immer gescheckt werden soll (alle X Millisekunden)
-             */
-            self.wait_until = function(check_func,on_ready_func,wait_intervall_in_ms){
+        };
 
-                wait_intervall_in_ms = typeof wait_intervall_in_ms === 'undefined' ? 5 : wait_intervall_in_ms;
+        /**
+         * Prueft ob eine Variable einen Wert enthaelt
+         * @param value
+         * @return {boolean}
+         */
+        self.isset = function(value){
 
-                var self = this;
+            if(typeof value === 'undefined' || value === null || value.toString().trim() === '') return false;
+            else return true;
 
-                setTimeout(function(){
+        };
 
-                    if(check_func()){
-                        on_ready_func();
-                    } else {
-                        self.wait_until(check_func,on_ready_func,wait_intervall_in_ms);
-                    }
+        /**
+         * Sucht eine genaue uebereinstimmung eines Keys mit dem Suchwort in einem Object
+         * @param key string|number
+         * @param object
+         * @returns {boolean}
+         */
+        self.is_key_in_object = function(key,object){
 
-                },wait_intervall_in_ms);
+            for(var word in object)
+                if(word === key)
+                    return true;
 
-            };
+            return false;
 
-            /**
-             * Gibt eine Zufaellige ID zurueck
-             * @returns {string}
-             */
-            self.get_random_id = function(){
+        };
 
-                // Ganzzahl => (Von (0.x * (2^24) ) + 1) => zu Hexadeziaml
-                var id1 = (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
-                var id2 = (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
-                var id3 = (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
-                return id1 + '-' + id2 + '-' + id3;
+        /**
+         * Prueft ob ein Wert in einem Array vorhanden ist
+         * @param value
+         * @param array array
+         * @return {boolean}
+         */
+        self.is_in_array = function(value,array){
 
-            };
-
+            if(array.indexOf(value) > -1) return true;
+            else return false;
 
         }
 
     },
 
-    classes : { // JS Tool Classes
+    /**
+     * Class
+     * Ein Taschenrechner fuer diverse einfache Rechenoperationen
+     */
+    Calculator : new function(){
+
+        var self = this;
+
+        /**
+         * Gibt den Prozentwert aus von Werten zwischen einem bestimmten Bereich
+         * @param float STRUCT.datatype.Float - Gleitkommazahl
+         * @param range STRUCT.math.Range - Von bis Range
+         */
+        self.percent = function(float,range){
+
+            if(!jst.TypeChecker.check(float, 'float',true)) return false;
+            if(!jst.TypeChecker.check(range, 'range',true)) return false;
+
+            return (float.value-range.from)/(range.to-range.from)*100;
+
+        };
+
+        /**
+         * Gibt auf einer Skala von 0 - 100 die Einstuffung des mitgegebenes Wertes anhand
+         * der auch mitgegebenen MIN und MAX Werte aus
+         * @param min
+         * @param max
+         * @param value
+         */
+        self.ratio = function(min,max,value){
+
+            value = value - min;
+            max = max - min;
+            return value/max * 100;
+
+        };
+
+        /**
+         * Summiert alle Zahlen in einem Eindimensionalen Array zusammen
+         * @param array
+         */
+        self.sum = function(array){
+
+            var sum = 0;
+            for(var index in array){
+                var val = array[index];
+                if(jst.TypeChecker.is_number(val)){
+                    val = Number(val);
+                    sum += val;
+                }
+            }
+            return sum;
+
+        };
+
+        /**
+         * Zaehle alle Eintraege in einem Objekt und gebe die Anzahl zurueck
+         * @param object|array
+         * @returns {number}
+         */
+        self.count = function(object_or_array){
+
+            var count = 0;
+            for(var i in object_or_array){
+                count++;
+            }
+            return count;
+
+        };
+
+        /**
+         * Gibt den Durchschnitt vom Array aus
+         * @param array
+         * @rerutn {number}
+         */
+        self.avg = function(array){
+
+            return self.sum(array)/self.count(array);
+
+        };
+
+
+
+        /**
+         * Gibt den Maximalsten Wert aus eone Object oder Array
+         * @param object_or_array
+         * @return {number}
+         */
+        self.max = function(object_or_array){
+
+            var max = null;
+            for(var i in object_or_array){
+                var val = object_or_array[i]
+                if(max === null) max = val;
+                if(jst.TypeChecker.is_number(val)){
+                    val = Number(val);
+                    if(val > max) max = val;
+                }
+            }
+            return max;
+
+        };
+
+        /**
+         * Gibt den Minimalsten Wert aus eone Object oder Array
+         * @param object_or_array
+         * @return {number}
+         */
+        self.min = function(object_or_array){
+
+            var min = null;
+            for(var i in object_or_array){
+                var val = object_or_array[i];
+                if(min === null) min = val;
+                if(jst.TypeChecker.is_number(val)) {
+                    val = Number(val);
+                    if (val < min) min = val;
+                }
+            }
+            return min;
+
+        };
+
+
+    },
+
+    /**
+     * Class
+     * HTML Dom Manipulationen und Checks
+     */
+    Dom : new function(){
+
+        var self = this;
+
+        /**
+         * Prueft ob das Node Element eine Kindelement des eigenen ist
+         * @param node_element
+         * @return {boolean}
+         */
+        self.is_child = function(child_node , parent_node){
+
+            var is_child = false;
+            var max_loop = 5000; // Maximale Loop Begrenzung um Aufhaengen zu vermeiden
+            var i = 0;
+
+            while(true){
+
+                if(typeof child_node.parentNode === 'undefined' || child_node.parentNode === null){
+                    break;
+                }
+
+                if(child_node === parent_node){
+                    is_child = true;
+                    break;
+                }
+
+                child_node = child_node.parentNode;
+
+                if(i >= max_loop) break;
+                i++;
+            }
+
+            return is_child;
+
+        };
+
+
+        /**
+         * Ersetzt eine Element mit einem Anderen
+         * @param old_node Node
+         * @param new_node Node
+         * @return new_node Node
+         */
+        self.replace_element = function(old_node, new_node){
+
+            old_node.parentNode.insertBefore(new_node,old_node);
+            old_node.parentNode.removeChild(old_node);
+            return new_node;
+
+        }
+
+    },
+
+    /**
+     * Class
+     * Extra Funktionen
+     *
+     * Not clear where to put these functions in
+     * so its a Placeholder for now
+     */
+    Extras : new function(){
+
+        var self = this;
+
+        /**
+         * Funktion die solange wartet bis eine Bedingung eintrifft
+         * @param check_func function - Die Funktion, welche die Bedingung checkt und TRUE oder FALSE zurueckgeben MUSS
+         * @param on_ready_func - Wenn die Bedingung erfuellt ist
+         * @param wait_intervall_in_ms - Die Sequenz wann immer gescheckt werden soll (alle X Millisekunden)
+         */
+        self.wait_until = function(check_func,on_ready_func,wait_intervall_in_ms){
+
+            wait_intervall_in_ms = typeof wait_intervall_in_ms === 'undefined' ? 5 : wait_intervall_in_ms;
+
+            var self = this;
+
+            setTimeout(function(){
+
+                if(check_func()){
+                    on_ready_func();
+                } else {
+                    self.wait_until(check_func,on_ready_func,wait_intervall_in_ms);
+                }
+
+            },wait_intervall_in_ms);
+
+        };
+
+        /**
+         * Gibt eine Zufaellige ID zurueck
+         * @returns {string}
+         */
+        self.get_random_id = function(){
+
+            // Ganzzahl => (Von (0.x * (2^24) ) + 1) => zu Hexadeziaml
+            var id1 = (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
+            var id2 = (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
+            var id3 = (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
+            return id1 + '-' + id2 + '-' + id3;
+
+        };
+
+
+    },
+
+    // JS Tool Classes for indicidual Instances
+    classes : {
 
         /**
          * Class
