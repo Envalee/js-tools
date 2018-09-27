@@ -16,7 +16,7 @@ var jst = {
                     .replace(',','.')
                     .replace(/[^0-9.]|\s/g,"");
 
-            if(!jst.Checker.isset(number) || number === null || !number) number = 0;
+            if(!jst.Checker.isset(number) || !number) number = 0;
             else if(number === true) number = 1;
             else if(isNaN(parseInt(number)))
                 throw new jst.type.JSException('[Integer] Ungueltiger Parameter im Konstruktor!');
@@ -31,7 +31,7 @@ var jst = {
                     .replace(',','.')
                     .replace(/[^0-9.]|\s/g,"");
 
-            if(!jst.Checker.isset(number) || number === null || !number) number = 0.0;
+            if(!jst.Checker.isset(number) || !number) number = 0.0;
             else if(number === true) number = 1.0;
             else if(isNaN(parseFloat(number)))
                 throw new jst.type.JSException('[Float] Ungueltiger Parameter im Konstruktor! Zahl kann nicht konvertiert werden!');
@@ -41,7 +41,7 @@ var jst = {
 
         String : function(string){
             if(string == null) string = 'null';
-            else if(!jst.Checker.isset(string)) string = "";
+            else if(jst.Checker.is_empty(string)) string = "";
 
             this.value = string.toString();
         },
@@ -303,7 +303,22 @@ var jst = {
          */
         self.isset = function(value){
 
-            return !(typeof value === 'undefined' || value === null || value.toString().trim() === '');
+            return !(typeof value === 'undefined' || value === null);
+
+        };
+
+        /**
+         * Prueft ob eine Variable leer oder undefiniert ist
+         * @param value
+         * @return {boolean}
+         */
+        self.is_empty = function(value){
+
+            return ( !self.isset(value)
+                || value.toString().trim() === ''
+                || (typeof value === 'array' && jst.Calculator.count(value) === 0)
+                || (typeof value === 'object' && jst.Calculator.count(value) === 0)
+            );
 
         };
 
