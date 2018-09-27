@@ -408,7 +408,7 @@ var jst = {
         };
 
         /**
-         * Zaehle alle Eintraege in einem Objekt und gebe die Anzahl zurueck
+         * Zaehle alle Eintraege in einem Objekt oder Array und gebe die Anzahl zurueck
          * @param object_or_array object|array
          * @returns {number}
          */
@@ -434,9 +434,8 @@ var jst = {
         };
 
 
-
         /**
-         * Gibt den Maximalsten Wert aus eone Object oder Array
+         * Gibt den Maximalsten Wert aus einem Object oder Array
          * @param object_or_array
          * @return {number}
          */
@@ -456,7 +455,7 @@ var jst = {
         };
 
         /**
-         * Gibt den Minimalsten Wert aus eone Object oder Array
+         * Gibt den Minimalsten Wert aus einem Object oder Array
          * @param object_or_array
          * @return {number}
          */
