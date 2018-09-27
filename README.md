@@ -1,4 +1,4 @@
-# JS-Tools [ JavaScript Tools ]
+# JS-Tools [ JavaScript Tools ] - Version 0.1
 
 Some helpfull tools for Javascript. It should be as minimal as possible, but as much as possible to be useful. :)
 
