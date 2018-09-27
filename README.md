@@ -1,3 +1,6 @@
+
+<img src="https://github.com/Envalee/js-tools/blob/master/img/icon.svg" alt="logo" width="96">
+
 # JS-Tools [ JavaScript Tools ] - Version 0.1
 
 Some helpfull tools for Javascript. It should be as minimal as possible, but as much as possible to be useful. :)
