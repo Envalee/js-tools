@@ -123,7 +123,7 @@ var jst = {
             typename = typename.toLowerCase();
 
             if(typeof jst.type.names[typename] === 'undefined'){
-                console.error("[TypeChecker] Undefinierte Typreferenz: " + typename);
+                console.error("[TypeChecker] Undefined Typereference: " + typename);
                 return false;
             }
 
@@ -132,7 +132,7 @@ var jst = {
                 return true;
             } else {
 
-                if(show_console_error) console.error("[TypeChecker] Erwartet Struktur: " + typename);
+                if(show_console_error) console.error("[TypeChecker] Structure (jst type) expected: " + typename);
                 return false;
             }
 
@@ -587,6 +587,56 @@ var jst = {
 
         };
 
+        /**
+         * Selektiert ein HTML Element per ID
+         * @param node_id string - Node ID
+         * @return {Node} HTML Element ( Node )
+         */
+        self.get_by_id = function( node_id ){
+
+            return document.getElementById(node_id);
+
+        };
+
+        /**
+         * Selektiert alle Node Elemente und gibt sie zurueck
+         * @param selector string - Dom Selektor
+         * @return Node[] - Node im Objekt
+         */
+        self.get = function( selector ){
+
+            var nodes = {};
+
+            var selection = document.querySelectorAll( selector );
+            for(var i in selection){
+                if(jst.Checker.is_number(i)) nodes[i] = selection[i];
+            }
+
+            return nodes;
+
+        };
+
+        /**
+         * Entfernt ein Node Element aus dem DOM
+         * @param node_element HTMLElement - Node Element
+         * @returns Node HTMLElement - Node Element
+         */
+        self.remove = function(node_element){
+
+            return node_element.parentNode.removeChild(node_element);
+
+        }
+
+        /**
+         * Entfernt alle Styles die im Node Element zusatzlich eingetragen wurden (inline)
+         * @param node_element Node - Node Element
+         */
+        self.clear_style = function(node_element){
+
+            node_element.removeAttribute('style');
+
+        }
+
     },
 
     /**
@@ -655,14 +705,22 @@ var jst = {
 
             var self = this;
 
-            if(!jst.Checker.isset(storage_key) && typeof storage_key !== 'string'){
-                console.error("[JST] LocalStorageManager - Cant create instance without a storage key in constructor (Argument 1)");
-                return false;
-            }
+            /**
+             * Konstruktor
+             * @param storage_key string - Key zum refernzieren
+             * @return {boolean}
+             */
+            self.construct = function(storage_key){
 
-            self.storage_key = storage_key;
+                if(!jst.Checker.isset(storage_key) && typeof storage_key !== 'string'){
+                    console.error("[JST] LocalStorageManager - Cant create instance without a storage key in constructor (Argument 1)");
+                    return false;
+                }
 
-            self.default_object = {}; // Standard Objekt
+                self.storage_key = storage_key;
+                self.default_object = {}; // Standard Objekt
+
+            };
 
             /**
              * Holt ein Objekt aus dem LocalStorage
@@ -710,7 +768,7 @@ var jst = {
 
                 console.log("New Obj",object);
 
-                if(typeof object !== 'object') console.error("Objekt erwartet!");
+                if(typeof object !== 'object') console.error("Object expected!");
                 else localStorage.setItem(this.storage_key, JSON.stringify(object) );
 
             };
@@ -760,6 +818,8 @@ var jst = {
 
             };
 
+
+            self.construct(storage_key);
 
         },
 
@@ -820,7 +880,7 @@ var jst = {
              */
             self.set_localstorage_key = function(key_name){
 
-                if(typeof key_name !== 'string') console.error('Der Key Name muss vom Typ string sein!');
+                if(typeof key_name !== 'string') console.error('The key name must be a string!');
                 else self.localStorageManager.storage_key = key_name;
 
             };
@@ -1125,7 +1185,7 @@ var jst = {
              */
             self.set_localstorage_key = function(key_name){
 
-                if(typeof key_name !== 'string') console.error('Der Key Name muss vom Typ string sein!');
+                if(typeof key_name !== 'string') console.error('The key name musst be a string!');
                 else self.localStorageManager.storage_key = key_name;
 
             };
