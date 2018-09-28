@@ -1,3 +1,6 @@
+
+<img src="https://github.com/Envalee/js-tools/blob/master/img/icon.svg" alt="logo" width="96">
+
 # JS-Tools [ JavaScript Tools ] - Version 0.1
 
 Some helpfull tools for Javascript. It should be as minimal as possible, but as much as possible to be useful. :)
@@ -67,4 +70,4 @@ console.log(jst.Formatter.get_datetimestring(curdate)); // --> 26.09.2018 13:30:
   * ArrayManager - Holds an Array and manage it. It allows to store it localy too.
 
 ## Documentation
-Wiki link incoming...
+https://github.com/Envalee/js-tools/wiki
