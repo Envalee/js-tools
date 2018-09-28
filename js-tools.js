@@ -1059,7 +1059,6 @@ var jst = {
 
             };
 
-
             /**
              * Dupliziert das Objekt ohne eine Verbindung beizubehalten
              * @returns object
