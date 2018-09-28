@@ -1,0 +1,7 @@
+body {background: #222; color: #FFF; padding: 0px; margin: 0px; font-family: calibri,helvetica,arial }
+button {display: /* ken */ block; margin: 20px 0px; background: #456; border:none; padding: 10px 15px; color: white;outline: 1px solid #789; }
+button:hover {background: #567; cursor: pointer; }
+button:focus {outline: 1px solid white;}
+
+#content {padding: 5px 25px 50px 25px; background: rgba(0,0,0,0.15);}
+#output {margin: 25px 0px;}
