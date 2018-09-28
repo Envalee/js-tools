@@ -5,3 +5,9 @@ button:focus {outline: 1px solid white;}
 
 #content {padding: 5px 25px 50px 25px; background: rgba(0,0,0,0.15);}
 #output {margin: 25px 0px;}
+#boxes {margin-top:15px;}
+
+.box {display: inline-block; width: 150px; height: 75px; margin:0px 10px; padding: 8px 16px;transition: margin .2s ease; will-change: margin; vertical-align: top;}
+.bg-green {background: yellowgreen;}
+.bg-red {background: firebrick;}
+.bg-blue {background: dodgerblue;}

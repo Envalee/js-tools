@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- HTML Basic Head -->
+    <meta charset="UTF-8">
+    <title>Example - Dom Usage</title>
+
+    <!-- Style -->
+    <link href="style.css" type="text/css" rel="stylesheet" />
+
+    <!-- Load JS Tools -->
+    <script type="text/javascript" src="../js-tools.js"></script>
+
+</head>
+<body>
+
+    <!-- HTML Content -->
+    <div id="content">
+
+        <i>Console for details (F12)</i>
+
+        <div id="boxes">
+
+            <div class="box">Box 1</div>
+            <div class="box">Box 2</div>
+            <div class="box">Box 3</div>
+
+        </div>
+
+    </div>
+
+    <!-- Use JS Tools -->
+    <script type="text/javascript">
+
+        // -------------------------------------------------------------------------------------------------------------
+
+        // JS Tools -->
+        // Typechecker
+        var nodes = jst.Dom.get('.box');
+
+        for(var i in nodes){
+
+            var node_element = nodes[i];
+
+            node_element.setAttribute('data-step' , i.toString() );
+
+            change_color(node_element);
+
+        }
+
+
+        function change_color(node_element){
+
+            var step = Number(node_element.getAttribute('data-step'));
+
+            if(step < 0) step = 2;
+            if(step > 2) step = 0;
+
+            remove_all_colors(node_element);
+
+            node_element.style.marginTop = -((step%2)*10).toString() + 'px';
+            node_element.style.boxShadow = step%2 ? '0px 2px 16px #000, 0px 2px 5px #AAA' : '0px 0px 0px #000';
+
+            switch(step){
+
+                case 0:
+                    jst.Dom.add_class(node_element , 'bg-blue');
+                    break;
+
+                case 1:
+                    jst.Dom.add_class(node_element , 'bg-green');
+                    break;
+
+                case 2:
+                    jst.Dom.add_class(node_element , 'bg-red');
+                    break;
+
+
+            }
+
+            node_element.setAttribute('data-step' , (step+1).toString() );
+
+            setTimeout(function(){ // Loop it
+
+                change_color(node_element);
+
+            },1000);
+
+        }
+
+        function remove_all_colors(node_element){
+
+            jst.Dom.remove_class(node_element , 'bg-red');
+            jst.Dom.remove_class(node_element , 'bg-green');
+            jst.Dom.remove_class(node_element , 'bg-blue');
+
+        }
+
+
+        // -------------------------------------------------------------------------------------------------------------
+
+    </script>
+</body>
+</html>
