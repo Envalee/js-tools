@@ -84,6 +84,15 @@ var jst = {
             this.y = y;
         },
 
+        Percent : function(percentage){
+
+            percentage = percentage > 1 ? 1 : percentage;
+            percentage = percentage < 0 ? 0 : percentage;
+
+            this.value = percentage;
+
+        },
+
         //
         // exceptions / Fehlerobjekte
         //
@@ -146,6 +155,7 @@ var jst = {
 
             get range()         {   return jst.type.Range    },
             get vector2d()      {   return jst.type.Vector2D },
+            get percent()       {   return jst.type.Percent  },
 
             get jsexception()   {   return jst.type.JSException }
 
@@ -433,7 +443,6 @@ var jst = {
 
         };
 
-
         /**
          * Gibt den Maximalsten Wert aus einem Object oder Array
          * @param object_or_array
@@ -474,6 +483,21 @@ var jst = {
 
         };
 
+        /**
+         * Kreisumfang ausgeben anhand des Radius. Hilfreich fuer SVG Grafiken bei den Attributen
+         * stroke-dasharray und stroke-dashoffset.
+         * @param float_radius jst.type.Float - Kreisradius
+         * @param percent jst.type.Percent - Prozent der Kreisfuellung
+         * @return {number} - Circumference
+         */
+        self.circumference = function( float_radius , percent ){
+
+            float_radius = jst.type.check(float_radius , "float") ? float_radius : new jst.type.Float(10);
+            percent = jst.type.check(percent , "percent") ? percent : new jst.type.Percent(1.0);
+
+            return 2 * Math.PI * float_radius.value * percent.value;
+
+        }
 
     },
 
@@ -518,7 +542,6 @@ var jst = {
 
         };
 
-
         /**
          * Ersetzt eine Element mit einem Anderen
          * @param old_node Node
@@ -532,6 +555,37 @@ var jst = {
             return new_node;
 
         }
+
+        /**
+         * Fuegt einen Klassennamen zum HTML Element hinzu
+         * @param node_element HTMLElement - Node Element
+         * @param classname string - Klassenname der hinzugefuegt werden soll
+         */
+        self.add_class = function(node_element , classname){
+
+            var classnames = node_element.className.split(' ');
+            if(!jst.Checker.is_in_array(classname , classnames))
+                classnames.push(classname);
+
+            node_element.className = classnames.join(" ").trim();
+
+        };
+
+        /**
+         * Entfernt einen Klassennamen von einem HTML Element
+         * @param node_element HTMLElement - Node Element
+         * @param classname string - Klassename der entfernt werden soll
+         */
+        self.remove_class = function( node_element , classname ){
+
+            var classnames = new jst.classes.ArrayManager(node_element.className.split(' '));
+            if(classnames.value_exists(classname))
+                classnames.remove(classnames.get_index(classname));
+
+            if(classnames.array.length === 0) node_element.removeAttribute('class');
+            else node_element.className = classnames.array.join(" ").trim();
+
+        };
 
     },
 
@@ -600,6 +654,11 @@ var jst = {
         LocalStorageManager : function(storage_key){
 
             var self = this;
+
+            if(!jst.Checker.isset(storage_key) && typeof storage_key !== 'string'){
+                console.error("[JST] LocalStorageManager - Cant create instance without a storage key in constructor (Argument 1)");
+                return false;
+            }
 
             self.storage_key = storage_key;
 
@@ -725,16 +784,17 @@ var jst = {
                 // Das zu verwaltende Objekt
                 self.object = typeof object === 'undefined' ? {} : object;
                 // Kopie des Objekts verwenden und nicht das Original
-                self.object = this.clone();
+                self.object = self.clone();
 
                 // Lokales Speichermanagement Key
-                local_key = typeof local_key === 'undefined' ? 'jst-local-key-placeholder' : local_key;
+                local_key = !jst.Checker.isset(local_key) ? null : local_key;
                 // Lokales Speichermanagement
-                self.localStorageManager = new jst.classes.LocalStorageManager(local_key);
-
+                if(local_key !== null)
+                    self.localStorageManager = new jst.classes.LocalStorageManager(local_key);
+                else
+                    self.localStorageManager = null;
 
             };
-
 
             /**
              * Neuen Key zum Objekt hinzufuegen
@@ -772,7 +832,11 @@ var jst = {
              */
             self.save = function(){
 
-                self.localStorageManager.set_objekt( self.object );
+                if(self.localStorageManager === null) {
+                    console.warn('[JST] ObjectManager - Cant save object. No local_key defined in Constructor (Argument 2)');
+                    return false;
+                } else
+                    self.localStorageManager.set_objekt( self.object );
 
             };
 
@@ -783,25 +847,34 @@ var jst = {
              */
             self.load = function(){
 
-                var localStorageObject = self.localStorageManager.get_objekt();
+                if(self.localStorageManager === null) {
 
-                if(localStorageObject !== null){ // Lokale Daten vorhanden
+                    console.warn('[JST] ObjectManager - Cant load object. No local_key defined in Constructor (Argument 2)');
+                    return false;
 
-                    if(self.count() > 0){ // Standardwerte vorhanden -> Merge Objects
+                } else {
 
-                        for(var key in localStorageObject){
+                    var localStorageObject = self.localStorageManager.get_objekt();
 
-                            if(typeof self.object[key] !== 'undefined'){ // Lade vorhandene Werte aus dem Storage
+                    if(localStorageObject !== null){ // Lokale Daten vorhanden
 
-                                self.object[key] = localStorageObject[key];
+                        if(self.count() > 0){ // Standardwerte vorhanden -> Merge Objects
+
+                            for(var key in localStorageObject){
+
+                                if(typeof self.object[key] !== 'undefined'){ // Lade vorhandene Werte aus dem Storage
+
+                                    self.object[key] = localStorageObject[key];
+
+                                }
 
                             }
 
+                        } else {
+
+                            self.object = localStorageObject;
+
                         }
-
-                    } else {
-
-                        self.object = localStorageObject;
 
                     }
 
@@ -973,12 +1046,24 @@ var jst = {
 
             var self = this;
 
-            // Lokales Speichermanagement Key
-            local_key = typeof local_key === 'undefined' ? 'jst-local-key-placeholder' : local_key;
-            self.localStorageManager = new jst.classes.LocalStorageManager(local_key);
+            /**
+             * Konstruktor
+             * @param array Array - Das zu verwaltende Array
+             * @param local_key string - Der local storage key
+             */
+            self.construct = function(array , local_key){
 
-            // Das zu verwaltende Objekt
-            self.array = typeof array === 'undefined' ? [] : array;
+                // Das zu verwaltende Objekt
+                self.array = typeof array === 'undefined' ? [] : array;
+
+                // Lokales Speichermanagement Key
+                local_key = typeof local_key === 'undefined' ? null : local_key;
+                if(local_key !== null)
+                    self.localStorageManager = new jst.classes.LocalStorageManager(local_key);
+                else
+                    self.localStorageManager = null;
+
+            };
 
             /**
              * Fuegt einen Wert zum Array hinzu
@@ -998,6 +1083,21 @@ var jst = {
 
             };
 
+            /**
+             * Gibt den Index eines Wertes aus. Wenn nicht vorhanden dann null
+             * @param value number - Index of Value or Null
+             */
+            self.get_index = function(value){
+
+                for(var index in self.array){
+
+                    if(self.array[index] == value) return index;
+
+                }
+
+                return null;
+
+            };
 
             /**
              * Gibt die Laenge des Arrays zurueck
@@ -1015,7 +1115,7 @@ var jst = {
              */
             self.value_exists = function(value){
 
-              return self.array.indexOf(value) > -1;
+                return self.array.indexOf(value) > -1;
 
             };
 
@@ -1037,7 +1137,11 @@ var jst = {
              */
             self.save = function(){
 
-                self.localStorageManager.set_objekt( { 'array' : self.array } );
+                if(local_key === null) {
+                    console.warn('[JST] ArrayManager - Cant save object. No local_key defined in Constructor (Argument 2)');
+                    return false;
+                }
+                else self.localStorageManager.set_objekt( { 'array' : self.array } );
 
             };
 
@@ -1048,8 +1152,12 @@ var jst = {
              */
             self.load = function(){
 
-                if(typeof self.localStorageManager.storage_key !== 'string') console.error('[JST-ArrayManager].load() : LocalStorage Key nicht vorhanden!');
-                else {
+                if(local_key === null){
+
+                    console.warn('[JST] ArrayManager - Cant load object. No local_key defined in Constructor (Argument 2)');
+                    return false;
+
+                } else {
 
                     var localStorageArray = self.localStorageManager.get_objekt_key('array');
 
@@ -1101,6 +1209,8 @@ var jst = {
                 return same;
 
             };
+
+            self.construct(array,local_key);
 
         }
 
