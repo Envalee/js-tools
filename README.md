@@ -70,4 +70,4 @@ console.log(jst.Formatter.get_datetimestring(curdate)); // --> 26.09.2018 13:30:
   * ArrayManager - Holds an Array and manage it. It allows to store it localy too.
 
 ## Documentation
-Wiki link incoming...
+https://github.com/Envalee/js-tools/wiki
