@@ -179,7 +179,7 @@ var jst = {
          * @param number_string string - Zahl die in eine Nummer konvertiert werden soll
          * @returns number|null - on error or not possible null
          */
-        self.to_number = function(number_string){
+        self.to_number = function( number_string ){
 
             if(jst.type.check.is_number(number_string))
                 return Number(number_string.toString()
@@ -197,7 +197,7 @@ var jst = {
          * @param number_length int - Aus wievielen Zahlen die Nummer bestehen soll ( Laenge des Zahlenstrings )
          * @returns string - Die Zahl mit Nullen aufgefuellt falls es notwendig war
          */
-        self.zerofill = function(number,number_length){
+        self.zerofill = function( number , number_length ){
 
             // Zahl in String
             var number_zerofilled = number.toString();
@@ -216,7 +216,7 @@ var jst = {
          * @param iso_date_format boolean - Optional - Default: false - In US (ISO) Format ausgeben oder EU Format
          * @returns string - Datetime
          */
-        self.get_datetimestring = function(dateobject,iso_date_format){
+        self.get_datetimestring = function(dateobject , iso_date_format){
 
             return this.get_datestring(dateobject,iso_date_format) + " " + this.get_timestring(dateobject);
 
@@ -230,8 +230,8 @@ var jst = {
          */
         self.get_datestring = function(dateobject , iso_date_format){
 
-            if (typeof dateobject === 'undefined') dateobject = new Date();
-            if (typeof iso_date_format === 'undefined') iso_date_format = false;
+            if (typeof dateobject === 'undefined' || dateobject === null) dateobject = new Date();
+            if (typeof iso_date_format === 'undefined' || iso_date_format === null) iso_date_format = false;
 
             if(iso_date_format){
 
@@ -264,8 +264,8 @@ var jst = {
          */
         self.get_timestring = function(dateobject , display_seconds){
 
-            if (typeof dateobject === 'undefined') dateobject = new Date();
-            if (typeof display_seconds === 'undefined') display_seconds = true;
+            if (typeof dateobject === 'undefined' || dateobject === null) dateobject = new Date();
+            if (typeof display_seconds === 'undefined' || display_seconds === null) display_seconds = true;
 
             if(display_seconds){
 
@@ -300,7 +300,7 @@ var jst = {
          * @param value mixed
          * @returns boolean
          */
-        self.is_number = function(value){
+        self.is_number = function( value ){
 
             return (!isNaN(value) && value !== null && value.toString().trim() !== '');
 
@@ -311,7 +311,7 @@ var jst = {
          * @param value
          * @return {boolean}
          */
-        self.isset = function(value){
+        self.isset = function( value ){
 
             return !(typeof value === 'undefined' || value === null);
 
@@ -322,7 +322,7 @@ var jst = {
          * @param value
          * @return {boolean}
          */
-        self.is_empty = function(value){
+        self.is_empty = function( value ){
 
             return ( !self.isset(value)
                 || value.toString().trim() === ''
@@ -338,7 +338,7 @@ var jst = {
          * @param object
          * @returns {boolean}
          */
-        self.is_key_in_object = function(key,object){
+        self.is_key_in_object = function( key , object ){
 
             for(var word in object)
                 if(word === key)
@@ -354,7 +354,7 @@ var jst = {
          * @param array array
          * @return {boolean}
          */
-        self.is_in_array = function(value,array){
+        self.is_in_array = function( value , array ){
 
             return array.indexOf(value) > -1;
 
@@ -375,7 +375,7 @@ var jst = {
          * @param float STRUCT.datatype.Float - Gleitkommazahl
          * @param range STRUCT.math.Range - Von bis Range
          */
-        self.percent = function(float,range){
+        self.percent = function( float , range ){
 
             if(!jst.type.check(float, 'float',true)) return false;
             if(!jst.type.check(range, 'range',true)) return false;
@@ -391,7 +391,7 @@ var jst = {
          * @param max
          * @param value
          */
-        self.ratio = function(min,max,value){
+        self.ratio = function( min , max , value ){
 
             value = value - min;
             max = max - min;
@@ -403,7 +403,7 @@ var jst = {
          * Summiert alle Zahlen in einem Eindimensionalen Array zusammen
          * @param array
          */
-        self.sum = function(array){
+        self.sum = function( array ){
 
             var sum = 0;
             for(var index in array){
@@ -422,7 +422,7 @@ var jst = {
          * @param object_or_array object|array
          * @returns {number}
          */
-        self.count = function(object_or_array){
+        self.count = function( object_or_array ){
 
             var count = 0;
             for(var i in object_or_array){
@@ -437,7 +437,7 @@ var jst = {
          * @param array
          * @rerutn {number}
          */
-        self.avg = function(array){
+        self.avg = function( array ){
 
             return self.sum(array)/self.count(array);
 
@@ -448,7 +448,7 @@ var jst = {
          * @param object_or_array
          * @return {number}
          */
-        self.max = function(object_or_array){
+        self.max = function( object_or_array ){
 
             var max = null;
             for(var i in object_or_array){
@@ -468,7 +468,7 @@ var jst = {
          * @param object_or_array
          * @return {number}
          */
-        self.min = function(object_or_array){
+        self.min = function( object_or_array ){
 
             var min = null;
             for(var i in object_or_array){
@@ -515,7 +515,7 @@ var jst = {
          * @param parent_node HTMLElement - Parent Node to check
          * @return {boolean}
          */
-        self.is_child = function(child_node , parent_node){
+        self.is_child = function( child_node , parent_node ){
 
             var is_child = false;
             var max_loop = 5000; // Maximale Loop Begrenzung um Aufhaengen zu vermeiden
@@ -548,7 +548,7 @@ var jst = {
          * @param new_node Node
          * @return new_node Node
          */
-        self.replace_element = function(old_node, new_node){
+        self.replace_element = function( old_node , new_node ){
 
             old_node.parentNode.insertBefore(new_node,old_node);
             old_node.parentNode.removeChild(old_node);
@@ -561,7 +561,7 @@ var jst = {
          * @param node_element HTMLElement - Node Element
          * @param classname string - Klassenname der hinzugefuegt werden soll
          */
-        self.add_class = function(node_element , classname){
+        self.add_class = function( node_element , classname ){
 
             var classnames = node_element.className.split(' ');
             if(!jst.Checker.is_in_array(classname , classnames))
@@ -621,7 +621,7 @@ var jst = {
          * @param node_element HTMLElement - Node Element
          * @returns Node HTMLElement - Node Element
          */
-        self.remove = function(node_element){
+        self.remove = function( node_element ){
 
             return node_element.parentNode.removeChild(node_element);
 
@@ -631,7 +631,7 @@ var jst = {
          * Entfernt alle Styles die im Node Element zusatzlich eingetragen wurden (inline)
          * @param node_element Node - Node Element
          */
-        self.clear_style = function(node_element){
+        self.clear_style = function( node_element ){
 
             node_element.removeAttribute('style');
 
@@ -656,7 +656,7 @@ var jst = {
          * @param on_ready_func - Wenn die Bedingung erfuellt ist
          * @param wait_intervall_in_ms - Die Sequenz wann immer gescheckt werden soll (alle X Millisekunden)
          */
-        self.wait_until = function(check_func,on_ready_func,wait_intervall_in_ms){
+        self.wait_until = function( check_func , on_ready_func , wait_intervall_in_ms ){
 
             wait_intervall_in_ms = typeof wait_intervall_in_ms === 'undefined' ? 5 : wait_intervall_in_ms;
 
@@ -676,15 +676,22 @@ var jst = {
 
         /**
          * Gibt eine Zufaellige ID zurueck
+         * @param hex_blocks Number - Count of Hex-Numeric Blocks that will be chained
          * @returns {string}
          */
-        self.get_random_id = function(){
+        self.get_random_id = function(hex_blocks){
 
-            // Ganzzahl => (Von (0.x * (2^24) ) + 1) => zu Hexadeziaml
-            var id1 = (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
-            var id2 = (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
-            var id3 = (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
-            return id1 + '-' + id2 + '-' + id3;
+            if(typeof hex_blocks === 'undefined') hex_blocks = 3;
+
+            var id = (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
+
+            for(var i = 1 ; i < hex_blocks ; i++){
+
+                id += "-" + (Math.floor(Math.random() * 0x1000000) + 1).toString(16);
+
+            }
+
+            return id;
 
         };
 
@@ -701,7 +708,7 @@ var jst = {
          * Eine LocalStorage Manager um JavaScript LocalStorage besser managen zu koennen
          * @constructor
          */
-        LocalStorageManager : function(storage_key){
+        LocalStorageManager : function( storage_key ){
 
             var self = this;
 
@@ -830,7 +837,7 @@ var jst = {
          * @param local_key string - (Optional) Local Storage Key
          * @constructor
          */
-        ObjectManager : function(object , local_key){
+        ObjectManager : function( object , local_key ){
 
             var self = this;
 
@@ -1101,7 +1108,7 @@ var jst = {
          * @param array array - Ein Array das verwaltet werden soll oder null (Dann wird ein leeres Array erzeugt)
          * @constructor
          */
-        ArrayManager : function(array , local_key){
+        ArrayManager : function( array , local_key ){
 
             var self = this;
 
@@ -1266,6 +1273,43 @@ var jst = {
                 }
 
                 return same;
+
+            };
+
+            /**
+             * Sammelt alle Duplikate mit den Index IDs der vorkommen aber loescht diese nicht
+             */
+            self.get_duplicated_values = function(){
+
+                var duplicated_values = {};
+
+                for(var index = 0; index < this.array.length ; index++){
+
+                    if(this.array.indexOf(this.array[index] , Number(index)+1 ) > -1)
+                        if(typeof duplicated_values[this.array[index]] === 'undefined')
+                            duplicated_values[this.array[index]] = { duplicated_ids : [ index ] }
+                        else {
+                            duplicated_values[this.array[index]].duplicated_ids.push(index);
+                        }
+                }
+
+                return duplicated_values;
+
+            };
+
+            /**
+             * Entfernt alle Duplikate im Array
+             */
+            self.remove_duplicated_values = function(){
+
+                for(var index = 0; index < this.array.length ; index++){
+
+                    if(this.array.indexOf(this.array[index] , Number(index)+1 ) > -1){
+                        this.array.splice(index,1);
+                        index--;
+                    }
+
+                }
 
             };
 
