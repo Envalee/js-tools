@@ -35,7 +35,7 @@ access all the tools.
 
 ```javascript
 // Exmaple for Calculator
-var value = 100;
+var value = new jst.type.Float(100);
 var range = new jst.type.Range(0,200);
 var perentage = new jst.Calculator.percent( value , range );
 console.log(percentage); // --> percentage : 50
