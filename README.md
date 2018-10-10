@@ -49,6 +49,34 @@ console.log(jst.Formatter.get_datetimestring(mydate , true)); // --> 2018-05-01 
 console.log(jst.Formatter.get_datetimestring(mydate)); // --> 01.05.2018 13:30:14 (Day.Month.Year Hour:Minute:Second)
 ```
 
+```javascript
+// Exmaple for Dom helper
+var dom_boxes = jst.Dom.get('.boxes'); // <-- Select all HTML Elements with class 'boxes'
+// dom_boxes = array with all HTML Elements / Nodes
+for(var i in dom_boxes) jst.Dom.add_class('active' , dom_boxes[i]); // Add class "active" to the node elements
+```
+
+```javascript
+// Exmaple for the Checker
+var x = 1;
+var y = null;
+// return false if is null or undefined
+jst.Checker.isset(x); // true
+jst.Checker.isset(y); // false
+jst.Checker.isset(z); // false
+
+// Another Example
+var a = 'my-string';
+var b = '';
+var c = {};
+var d = null;
+var e = false;
+jst.Checker.is_empty(a); // false
+jst.Checker.is_empty(b); // true
+jst.Checker.is_empty(c); // true
+jst.Checker.is_empty(d); // true
+jst.Checker.is_empty(e); // false
+```
 
 #### Main Parts
 
