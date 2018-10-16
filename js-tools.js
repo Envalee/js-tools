@@ -84,12 +84,12 @@ var jst = {
             this.y = y;
         },
 
-        Percent : function(percentage){
+        Percent : function(float_from_zero_to_one){
 
-            percentage = percentage > 1 ? 1 : percentage;
-            percentage = percentage < 0 ? 0 : percentage;
+            float_from_zero_to_one = float_from_zero_to_one > 1 ? 1 : float_from_zero_to_one;
+            float_from_zero_to_one = float_from_zero_to_one < 0 ? 0 : float_from_zero_to_one;
 
-            this.value = percentage;
+            this.value = float_from_zero_to_one;
 
         },
 
@@ -385,11 +385,11 @@ var jst = {
         };
 
         /**
-         * Gibt auf einer Skala von 0 - 100 die Einstuffung des mitgegebenes Wertes anhand
+         * Gibt auf einer Skala von 0 - 100 die Einstufung des mitgegebenes Wertes anhand
          * der auch mitgegebenen MIN und MAX Werte aus
-         * @param min
-         * @param max
-         * @param value
+         * @param min number
+         * @param max number
+         * @param value number
          */
         self.ratio = function( min , max , value ){
 
@@ -605,11 +605,11 @@ var jst = {
          */
         self.get = function( selector ){
 
-            var nodes = {};
+            var nodes = [];
 
             var selection = document.querySelectorAll( selector );
             for(var i in selection){
-                if(jst.Checker.is_number(i)) nodes[i] = selection[i];
+                if(jst.Checker.is_number(i)) nodes.push(selection[i]);
             }
 
             return nodes;
@@ -635,7 +635,44 @@ var jst = {
 
             node_element.removeAttribute('style');
 
-        }
+        };
+
+        /**
+         * Erstellt ein HTML Element und gibt es als Objekt zurueck
+         * @param tagtype string - Element Type
+         * @param element_attributes object - List: Attribute-Name => Attribute-Value
+         * @param element_events object - List: Event-Name => Function
+         */
+        self.create_element = function( tagtype , element_attributes , element_events , target_selector ){
+
+            tagtype = jst.Checker.isset(tagtype) ? tagtype : 'div';
+            element_attributes = typeof element_attributes === 'object' ? element_attributes : {};
+            element_events = typeof element_events === 'object' ? element_events : {};
+
+            var element = document.createElement(tagtype);
+
+            element.destroy = function(){
+                element.parentNode.removeChild(element);
+            };
+
+            for(var key in element_attributes){
+                element.setAttribute(key , element_attributes[key]);
+            }
+
+            for(var key in element_events){
+                element.addEventListener(key , element_events[key]);
+            }
+
+            if(jst.Checker.isset(target_selector)){
+
+                document.querySelector(target_selector).appendChild(element);
+
+            }
+
+            return element;
+
+        };
+
 
     },
 
