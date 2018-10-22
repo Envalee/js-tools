@@ -17,6 +17,8 @@ Of course you can use the js-tools.min.js as well.
 
 ## Features
 
+<img src="https://github.com/Envalee/js-tools/blob/master/img/overview.svg" alt="logo" width="920">
+
 * Datatype Objects (Float, Int, Vector, String, and more to be a little bit like TypeScript without big build tools)
 * Formatter for easy date strings (Date : Time) or easy number strings (Zerofill)
 * Objetmanager for more options to manage data
@@ -88,7 +90,7 @@ jst.Checker.is_empty(e); // false
   
 * static - Ready to use instances which allow direct access to there functionality (jst.TheStaticClassname)
   * Formatter - Formating strings and dates
-  * TypeChecker - Check build in types or some other type stuff
+  * Checker - Check build in types or some other type stuff
   * Calculator - Easy math to calculate some common things
   * Dom - HTML Dom manipulation, checks and tools
   * Extra - Some functions which are not clear where to put them but are usefull
